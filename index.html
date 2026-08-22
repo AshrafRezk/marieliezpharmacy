@@ -46,6 +46,8 @@
       </a>
       <nav class="top-nav" aria-label="Primary">
         <a href="#care">Care</a>
+        <a href="#brands">Brands</a>
+        <a href="#map">Map</a>
         <a href="#visit">Visit</a>
         <a class="chip-cta" href="#visit">Get in touch</a>
       </nav>
@@ -72,8 +74,8 @@
           <a class="btn btn-filled" href="#visit">
             <span>Plan a visit</span>
           </a>
-          <a class="btn btn-tonal" href="#care">
-            <span>Explore care</span>
+          <a class="btn btn-tonal" href="#map">
+            <span>Find a branch</span>
           </a>
         </div>
       </section>
@@ -152,30 +154,135 @@
         </ul>
       </section>
 
+      <section class="panel panel-brands" id="brands" data-reveal>
+        <p class="eyebrow">Cosmetics</p>
+        <h2>Top-notch beauty brands, in store.</h2>
+        <p class="lede">
+          Dermocosmetics and haircare you trust — curated for Cairo’s everyday
+          routines.
+        </p>
+
+        <ul class="brand-logos" role="list" aria-label="Featured cosmetics brands">
+          <li>
+            <img
+              src="/brands/vichy.png"
+              alt="Vichy Laboratoires"
+              width="160"
+              height="51"
+              loading="lazy"
+            />
+          </li>
+          <li>
+            <img
+              src="/brands/kerastase.png"
+              alt="Kérastase Paris"
+              width="160"
+              height="50"
+              loading="lazy"
+            />
+          </li>
+          <li>
+            <img
+              src="/brands/la-roche-posay.svg"
+              alt="La Roche-Posay"
+              width="160"
+              height="69"
+              loading="lazy"
+            />
+          </li>
+          <li>
+            <img
+              src="/brands/loreal.svg"
+              alt="L'Oréal"
+              width="160"
+              height="29"
+              loading="lazy"
+            />
+          </li>
+        </ul>
+
+        <p class="brands-note">
+          Ask our pharmacists for guidance on Vichy, Kérastase, La Roche-Posay,
+          L'Oréal, and peer dermocosmetic lines.
+        </p>
+      </section>
+
+      <section class="panel panel-map" id="map" data-reveal>
+        <p class="eyebrow">Locations</p>
+        <h2>Find a Marieliez branch.</h2>
+        <p class="lede">
+          Two neighbourhood pharmacies — with nearby compounds and hospitals
+          highlighted for easy orientation.
+        </p>
+
+        <div class="map-frame" role="region" aria-label="Interactive map of Marieliez Pharmacy branches">
+          <div id="pharmacy-map" class="pharmacy-map" tabindex="0" aria-label="Map of pharmacy branches"></div>
+          <ul class="map-legend" aria-label="Map legend">
+            <li>
+              <span class="legend-swatch legend-pharmacy" aria-hidden="true"></span>
+              Pharmacy
+            </li>
+            <li>
+              <span class="legend-swatch legend-hospital" aria-hidden="true"></span>
+              Hospital
+            </li>
+            <li>
+              <span class="legend-swatch legend-compound" aria-hidden="true"></span>
+              Compound
+            </li>
+          </ul>
+        </div>
+
+        <ul class="branch-list" role="list">
+          <li>
+            <strong>Al Golf Branch</strong>
+            <span>23 Ahmed Tayseer St., Al Golf, Nasr City</span>
+          </li>
+          <li>
+            <strong>Highland Park Branch</strong>
+            <span>Highland Park Mall, El Andalus, New Cairo</span>
+          </li>
+        </ul>
+      </section>
+
       <section class="panel panel-visit" id="visit" data-reveal>
         <p class="eyebrow">Visit us</p>
         <h2>We’re ready when you need us.</h2>
         <p class="lede">
-          Stop by or reach out — our team is happy to help with your next
-          prescription or question.
+          Message us on WhatsApp, call the pharmacy, or follow updates on
+          Facebook — then <a class="inline-link" href="#map">jump to the map</a>
+          to find your branch.
         </p>
 
         <div class="contact-grid">
-          <a class="contact-tile" href="tel:+10000000000">
+          <a
+            class="contact-tile"
+            href="https://wa.me/201121111605"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+          >
+            <span class="tile-label">WhatsApp</span>
+            <span class="tile-value">Chat with us</span>
+          </a>
+          <a
+            class="contact-tile"
+            href="tel:+201121111605"
+            aria-label="Call Marieliez Pharmacy at +20 112 111 1605"
+          >
             <span class="tile-label">Call</span>
-            <span class="tile-value">+1 (000) 000-0000</span>
+            <span class="tile-value">+20 112 111 1605</span>
           </a>
-          <a class="contact-tile" href="mailto:hello@marieliezpharmacy.com">
-            <span class="tile-label">Email</span>
-            <span class="tile-value">hello@marieliezpharmacy.com</span>
+          <a
+            class="contact-tile"
+            href="https://www.facebook.com/MarieliezPharmacyeg/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Marieliez Pharmacy on Facebook"
+          >
+            <span class="tile-label">Facebook</span>
+            <span class="tile-value">@MarieliezPharmacyeg</span>
           </a>
-          <div class="contact-tile contact-tile-static" role="group" aria-label="Hours">
-            <span class="tile-label">Hours</span>
-            <span class="tile-value">
-              Mon–Fri 9:00–18:00<br />
-              Sat 10:00–14:00
-            </span>
-          </div>
         </div>
       </section>
     </main>
@@ -197,27 +304,27 @@
         </svg>
         <span>Home</span>
       </a>
-      <a class="dock-item" href="#care" data-nav="care">
+      <a class="dock-item" href="#brands" data-nav="brands">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
           <path
-            d="M12 4.5v15M7.5 9.5h9M7.5 14.5h9"
+            d="M7 7.5h10M7 12h10M7 16.5h6"
             stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
           />
           <rect
-            x="5.5"
+            x="4.5"
             y="4.5"
-            width="13"
+            width="15"
             height="15"
-            rx="3"
+            rx="3.5"
             stroke="currentColor"
             stroke-width="1.5"
           />
         </svg>
-        <span>Care</span>
+        <span>Brands</span>
       </a>
-      <a class="dock-item" href="#visit" data-nav="visit">
+      <a class="dock-item" href="#map" data-nav="map">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
           <path
             d="M12 21s6.5-5.2 6.5-10.2A6.5 6.5 0 0 0 12 4.3a6.5 6.5 0 0 0-6.5 6.5C5.5 15.8 12 21 12 21Z"
@@ -225,6 +332,17 @@
             stroke-width="1.5"
           />
           <circle cx="12" cy="10.8" r="2.2" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+        <span>Map</span>
+      </a>
+      <a class="dock-item" href="#visit" data-nav="visit">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+          <path
+            d="M8.2 5.5h2.1l1.1 3.2-1.4 1.4a11.2 11.2 0 0 0 4.9 4.9l1.4-1.4 3.2 1.1v2.1a1.8 1.8 0 0 1-1.9 1.8A14.7 14.7 0 0 1 4.4 7.4 1.8 1.8 0 0 1 6.2 5.5Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
         </svg>
         <span>Visit</span>
       </a>

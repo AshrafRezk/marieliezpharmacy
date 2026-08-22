@@ -1,0 +1,19 @@
+Brand logo sources (saved locally under public/brands/; not hotlinked)
+====================================================================
+L'Oréal          Wikimedia Commons File:L'Oréal logo.svg
+                 https://commons.wikimedia.org/wiki/File:L%27Or%C3%A9al_logo.svg
+                 Paths recolored to #F3F2EE for dark UI.
+
+La Roche-Posay   Wikimedia Commons File:La Roche-Posay (brand).svg
+                 https://commons.wikimedia.org/wiki/File:La_Roche-Posay_(brand).svg
+                 Fills adapted (#F3F2EE wordmark, soft blue accent) for dark UI.
+
+Vichy            Wikimedia Commons File:Vichy Laboratoires (logo).jpg
+                 Converted to cream-on-transparent PNG for dark UI.
+                 SVG wordmark (vichy.svg) also provided as crisp fallback.
+
+Kérastase        Wikimedia Commons File:Kérastase logo.jpg
+                 Converted to cream-on-transparent PNG for dark UI.
+                 SVG wordmark (kerastase.svg) also provided as crisp fallback.
+
+cosmetics-promo  User-provided Marieliez promo composite (JPEG).

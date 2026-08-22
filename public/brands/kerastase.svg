@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" role="img" aria-label="Kérastase Paris">
+  <title>Kérastase Paris</title>
+  <!-- Wordmark adapted for dark UI from Wikimedia Commons File:Kérastase logo.jpg -->
+  <text x="260" y="78" text-anchor="middle" fill="#F3F2EE"
+        font-family="Helvetica Neue, Arial, sans-serif"
+        font-size="48" font-weight="600" letter-spacing="4">KÉRASTASE</text>
+  <text x="260" y="112" text-anchor="middle" fill="#F3F2EE"
+        font-family="Helvetica Neue, Arial, sans-serif"
+        font-size="16" font-weight="500" letter-spacing="8">PARIS</text>
+</svg>

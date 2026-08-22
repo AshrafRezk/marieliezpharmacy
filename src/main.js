@@ -3,7 +3,7 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear())
 
 const topBar = document.querySelector('[data-elevate]')
 const dockItems = [...document.querySelectorAll('.dock-item')]
-const sections = ['top', 'care', 'visit']
+const sections = ['top', 'care', 'brands', 'map', 'visit']
   .map((id) => document.getElementById(id))
   .filter(Boolean)
 
@@ -49,6 +49,30 @@ if ('IntersectionObserver' in window) {
   sections.forEach((section) => navObserver.observe(section))
 } else {
   document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-inview'))
+}
+
+/* Lazy-init Leaflet map when #map is near viewport */
+const mapMount = document.getElementById('pharmacy-map')
+if (mapMount) {
+  const bootMap = async () => {
+    const { initPharmacyMap } = await import('./map.js')
+    initPharmacyMap(mapMount)
+  }
+
+  if ('IntersectionObserver' in window) {
+    const mapObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          mapObserver.disconnect()
+          bootMap()
+        }
+      },
+      { rootMargin: '120px 0px', threshold: 0.05 },
+    )
+    mapObserver.observe(mapMount)
+  } else {
+    bootMap()
+  }
 }
 
 /* PWA install prompt */

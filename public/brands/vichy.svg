@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 140" role="img" aria-label="Vichy Laboratoires">
+  <title>Vichy Laboratoires</title>
+  <!-- Wordmark adapted for dark UI from Wikimedia Commons File:Vichy Laboratoires (logo).jpg -->
+  <text x="240" y="78" text-anchor="middle" fill="#F3F2EE"
+        font-family="Arial Narrow, Helvetica Neue Condensed, Arial, sans-serif"
+        font-size="72" font-weight="700" letter-spacing="6">VICHY</text>
+  <text x="240" y="118" text-anchor="middle" fill="#F3F2EE"
+        font-family="Helvetica Neue, Arial, sans-serif"
+        font-size="18" font-weight="400" letter-spacing="10">LABORATOIRES</text>
+</svg>
