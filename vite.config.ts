@@ -1,7 +1,18 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
+
+type HostingConfig = {
+  d1?: string;
+  r2?: string;
+};
+
+// `.openai/hosting.json` identifies a Sites checkout, but external build
+// providers may intentionally omit it. Load it only when it is available so
+// Next.js/Netlify can type-check this config from a clean repository clone.
+const hostingConfig: HostingConfig = await import("./.openai/hosting.json", {
+  with: { type: "json" },
+}).then(({ default: config }) => config).catch(() => ({}));
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
