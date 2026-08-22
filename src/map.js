@@ -73,15 +73,25 @@ const reduceMotion = () =>
 /**
  * Leaflet forces `.leaflet-marker-pane img { max-width:none !important; width:auto }`,
  * so <img> logos inside DivIcons paint at native size (compound PNGs ~700-850px,
- * pwa-192 at 192px). Use CSS background-image on fixed boxes instead.
+ * pwa-192 at 192px). Pharmacy pins use CSS background-image for the logo;
+ * compound chips use the same pattern on fixed boxes.
  */
 function pharmacyIcon() {
   return L.divIcon({
     className: 'map-marker-pharmacy',
-    html: `<span class="map-marker-pharmacy-inner" aria-hidden="true"></span>`,
-    iconSize: [44, 44],
-    iconAnchor: [22, 44],
-    popupAnchor: [0, -40],
+    html: `<span class="map-pin-pharmacy" aria-hidden="true">
+      <span class="map-pin-pharmacy-glow"></span>
+      <span class="map-pin-pharmacy-body">
+        <span class="map-pin-pharmacy-face">
+          <span class="map-pin-pharmacy-logo"></span>
+        </span>
+      </span>
+      <span class="map-pin-pharmacy-point"></span>
+    </span>`,
+    // Tall teardrop: tip sits on lat/lng; popup opens above the head so the pin stays readable
+    iconSize: [48, 64],
+    iconAnchor: [24, 64],
+    popupAnchor: [0, -70],
   })
 }
 
@@ -280,13 +290,32 @@ export function initPharmacyMap(container) {
     localBounds.extend([h.lat, h.lng])
   })
 
+  // Pharmacy pins above compounds/hospitals, still under popups (700)
+  if (!map.getPane('pharmacyPane')) {
+    map.createPane('pharmacyPane')
+    map.getPane('pharmacyPane').style.zIndex = 650
+  }
+
   const markersById = new Map()
   const pharmacyMarkers = branches.map((b) => {
-    const marker = L.marker([b.lat, b.lng], { icon: pharmacyIcon() })
+    const marker = L.marker([b.lat, b.lng], {
+      icon: pharmacyIcon(),
+      pane: 'pharmacyPane',
+      zIndexOffset: 1000,
+      riseOnHover: true,
+    })
       .addTo(map)
-      .bindPopup(pharmacyPopup(b))
+      .bindPopup(pharmacyPopup(b), { offset: L.point(0, -4), autoPanPadding: [48, 48] })
     markersById.set(b.id, marker)
     marker.on('click', () => setActiveBranch(b.id))
+    marker.on('popupopen', () => {
+      const el = marker.getElement()
+      el?.classList.add('is-popup-open')
+    })
+    marker.on('popupclose', () => {
+      const el = marker.getElement()
+      el?.classList.remove('is-popup-open')
+    })
     return marker
   })
 
