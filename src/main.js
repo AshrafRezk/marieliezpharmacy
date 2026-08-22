@@ -3,7 +3,7 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear())
 
 const topBar = document.querySelector('[data-elevate]')
 const dockItems = [...document.querySelectorAll('.dock-item')]
-const sections = ['top', 'care', 'brands', 'map', 'visit']
+const sections = ['top', 'care', 'emergency', 'brands', 'map', 'visit']
   .map((id) => document.getElementById(id))
   .filter(Boolean)
 
