@@ -12,6 +12,7 @@ dist
 dist-ssr
 dev-dist
 *.local
+scripts/.cache/
 
 # Salesforce local metadata
 .sf/

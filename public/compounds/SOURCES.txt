@@ -1,0 +1,15 @@
+Compound logos (saved locally under public/compounds/; not hotlinked)
+====================================================================
+Source: SODIC public Sakneen map
+https://sodic.public.sakneen.com/search/map/public
+API:   https://sodic.public.sakneen.com/api/proxy/compounds/map
+CDN:   https://img.sakneen.com/.../sodic/public_icons/*.png
+
+sodic-eastown.png           Eastown public_icon (Sakneen)
+sodic-vilette.png           Villette public_icon (Sakneen)
+sodic-kattameya-plaza.png   Kattameya Plaza public_icon (Sakneen)
+sodic-ednc.png              EDNC public_icon (Sakneen)
+sodic-sodic-east.png        SODIC East public_icon (Sakneen)
+
+Polygons for those compounds also come from the same compounds/map
+payload (geometry). Akoya outline is Nominatim/OSM (not on SODIC map).

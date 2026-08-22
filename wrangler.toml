@@ -1,0 +1,14 @@
+# Cloudflare Pages — preferred host for visitors in Egypt.
+# Netlify edge IPs currently time out from Egyptian ISPs; Cloudflare does not.
+#
+# First-time deploy:
+#   npx wrangler login
+#   npm run deploy:cf
+#
+# Or connect this GitHub repo in the Cloudflare Pages dashboard:
+#   Build command: npm run build
+#   Build output directory: dist
+
+name = "marieliez-pharmacy"
+compatibility_date = "2026-08-22"
+pages_build_output_dir = "dist"

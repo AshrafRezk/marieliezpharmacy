@@ -10,7 +10,7 @@
       name="description"
       content="Marieliez Pharmacy — thoughtful care, trusted guidance, and everyday wellness."
     />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#0a1210" />
     <meta name="color-scheme" content="dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -26,6 +26,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://talabat.dhmedia.io" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"
       rel="stylesheet"
@@ -46,11 +47,15 @@
       </a>
       <nav class="top-nav" aria-label="Primary">
         <a href="#care">Care</a>
+        <a href="#shop">Shop</a>
         <a href="#emergency">Urgent</a>
         <a href="#brands">Brands</a>
         <a href="#map">Map</a>
         <a href="#visit">Visit</a>
-        <a class="chip-cta" href="#visit">Get in touch</a>
+        <button type="button" class="chip-cta top-cart" data-cart-open>
+          Cart
+          <span class="cart-badge" data-cart-count hidden>0</span>
+        </button>
       </nav>
     </header>
 
@@ -72,8 +77,8 @@
           with clarity and care.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-filled" href="#visit">
-            <span>Plan a visit</span>
+          <a class="btn btn-filled" href="#shop">
+            <span>Browse products</span>
           </a>
           <a class="btn btn-tonal" href="#map">
             <span>Find a branch</span>
@@ -153,6 +158,40 @@
             </div>
           </li>
         </ul>
+      </section>
+
+      <section class="panel panel-shop" id="shop" data-reveal>
+        <p class="eyebrow">Order online</p>
+        <h2>Browse the pharmacy shelf.</h2>
+        <p class="lede">
+          Search our catalog, add items to your cart, then message us on WhatsApp
+          to place your order.
+        </p>
+        <p class="price-disclaimer" role="note">Prices are liable to change</p>
+
+        <div class="shop-toolbar">
+          <label class="shop-search">
+            <span class="visually-hidden">Search products</span>
+            <input
+              type="search"
+              data-shop-search
+              placeholder="Search medicines, skincare, vitamins…"
+              autocomplete="off"
+              enterkeyhint="search"
+            />
+          </label>
+          <p class="shop-meta" data-shop-meta></p>
+        </div>
+
+        <div class="shop-chips" data-shop-categories role="toolbar" aria-label="Product categories"></div>
+
+        <div class="shop-grid" data-shop-grid></div>
+
+        <div class="shop-more-wrap">
+          <button type="button" class="btn btn-tonal" data-shop-more hidden>
+            <span>Show more</span>
+          </button>
+        </div>
       </section>
 
       <section class="panel panel-emergency" id="emergency" data-reveal>
@@ -283,8 +322,8 @@
         <p class="eyebrow">Locations</p>
         <h2>Find a Marieliez branch.</h2>
         <p class="lede">
-          Two neighbourhood pharmacies — with nearby compounds and hospitals
-          highlighted for easy orientation.
+          Two neighbourhood pharmacies — tap a branch to fly the map there, with
+          East Cairo compounds and hospitals highlighted for orientation.
         </p>
 
         <div class="map-frame" role="region" aria-label="Interactive map of Marieliez Pharmacy branches">
@@ -306,11 +345,25 @@
         </div>
 
         <ul class="branch-list" role="list">
-          <li>
+          <li
+            class="branch-item"
+            data-branch-id="golf"
+            role="button"
+            tabindex="0"
+            aria-current="false"
+            aria-label="Show Al Golf Branch on the map"
+          >
             <strong>Al Golf Branch</strong>
             <span>23 Ahmed Tayseer St., Al Golf, Nasr City</span>
           </li>
-          <li>
+          <li
+            class="branch-item"
+            data-branch-id="tagamoa"
+            role="button"
+            tabindex="0"
+            aria-current="false"
+            aria-label="Show Highland Park Branch on the map"
+          >
             <strong>Highland Park Branch</strong>
             <span>Highland Park Mall, El Andalus, New Cairo</span>
           </li>
@@ -367,6 +420,9 @@
         <span class="footer-sep" aria-hidden="true">·</span>
         <span class="brand-tag">#treatslikefamily</span>
       </p>
+      <p class="footer-meta">
+        powered by love by Cloudastick Systems Salesforce Partner
+      </p>
     </footer>
 
     <nav class="dock" aria-label="Quick navigation">
@@ -381,25 +437,22 @@
         </svg>
         <span>Home</span>
       </a>
-      <a class="dock-item" href="#brands" data-nav="brands">
+      <a class="dock-item" href="#shop" data-nav="shop">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
           <path
-            d="M7 7.5h10M7 12h10M7 16.5h6"
+            d="M6.5 7.5h11l-.9 10.2a1.8 1.8 0 0 1-1.8 1.6H9.2a1.8 1.8 0 0 1-1.8-1.6L6.5 7.5Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 7.5V6.2A3 3 0 0 1 12 3.2 3 3 0 0 1 15 6.2v1.3"
             stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
           />
-          <rect
-            x="4.5"
-            y="4.5"
-            width="15"
-            height="15"
-            rx="3.5"
-            stroke="currentColor"
-            stroke-width="1.5"
-          />
         </svg>
-        <span>Brands</span>
+        <span>Shop</span>
       </a>
       <a class="dock-item" href="#map" data-nav="map">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -424,6 +477,50 @@
         <span>Visit</span>
       </a>
     </nav>
+
+    <button type="button" class="cart-fab" id="cart-fab" hidden aria-label="Open cart">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+        <path
+          d="M6.5 7.5h11l-.9 10.2a1.8 1.8 0 0 1-1.8 1.6H9.2a1.8 1.8 0 0 1-1.8-1.6L6.5 7.5Z"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9 7.5V6.2A3 3 0 0 1 12 3.2 3 3 0 0 1 15 6.2v1.3"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span class="cart-badge" data-cart-count hidden>0</span>
+    </button>
+
+    <div class="cart-drawer" id="cart-drawer" hidden>
+      <div class="cart-backdrop" data-cart-close tabindex="-1" aria-hidden="true"></div>
+      <div
+        class="cart-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+      >
+        <header class="cart-header">
+          <h2 id="cart-title">Your cart</h2>
+          <button type="button" class="text-btn" data-cart-close>Close</button>
+        </header>
+        <div class="cart-body" data-cart-body></div>
+        <footer class="cart-footer">
+          <div class="cart-total-row">
+            <span>Approx. total</span>
+            <strong data-cart-total>~ EGP 0</strong>
+          </div>
+          <p class="price-disclaimer" role="note">Prices are liable to change</p>
+          <button type="button" class="btn btn-filled" data-cart-checkout disabled>
+            <span>Order on WhatsApp</span>
+          </button>
+        </footer>
+      </div>
+    </div>
 
     <div class="toast" id="install-toast" hidden>
       <div class="toast-body">

@@ -1,9 +1,14 @@
+import { initShop } from './shop.js'
+import { initFeedback } from './feedback.js'
+
 const yearEl = document.getElementById('year')
 if (yearEl) yearEl.textContent = String(new Date().getFullYear())
 
+initFeedback()
+
 const topBar = document.querySelector('[data-elevate]')
 const dockItems = [...document.querySelectorAll('.dock-item')]
-const sections = ['top', 'care', 'emergency', 'brands', 'map', 'visit']
+const sections = ['top', 'care', 'shop', 'emergency', 'brands', 'map', 'visit']
   .map((id) => document.getElementById(id))
   .filter(Boolean)
 
@@ -50,6 +55,8 @@ if ('IntersectionObserver' in window) {
 } else {
   document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-inview'))
 }
+
+initShop()
 
 /* Lazy-init Leaflet map when #map is near viewport */
 const mapMount = document.getElementById('pharmacy-map')
