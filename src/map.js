@@ -40,13 +40,13 @@ const branches = [
 const hospitals = [
   {
     name: 'Cleopatra Hospital',
-    context: 'Near Al Golf / Heliopolis — well-known neighbour for the Nasr City branch.',
+    context: 'Near Al Golf / Heliopolis; well-known neighbour for the Nasr City branch.',
     lat: 30.0931614,
     lng: 31.3297425,
   },
   {
     name: 'Air Force Specialized Hospital',
-    context: 'South 90th Street, New Cairo — major hospital near Fifth Settlement.',
+    context: 'South 90th Street, New Cairo; major hospital near Fifth Settlement.',
     lat: 30.0176227,
     lng: 31.4345662,
   },
@@ -58,7 +58,7 @@ const hospitals = [
   },
 ]
 
-/** Compounds near New Cairo / Highland Park — used for the default camera frame. */
+/** Compounds near New Cairo / Highland Park; used for the default camera frame. */
 const LOCAL_COMPOUND_IDS = new Set([
   'akoya',
   'sodic-eastown',
@@ -72,7 +72,7 @@ const reduceMotion = () =>
 
 /**
  * Leaflet forces `.leaflet-marker-pane img { max-width:none !important; width:auto }`,
- * so <img> logos inside DivIcons paint at native size (compound PNGs ~700–850px,
+ * so <img> logos inside DivIcons paint at native size (compound PNGs ~700-850px,
  * pwa-192 at 192px). Use CSS background-image on fixed boxes instead.
  */
 function pharmacyIcon() {

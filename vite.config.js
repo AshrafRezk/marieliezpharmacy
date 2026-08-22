@@ -20,7 +20,7 @@ export default defineConfig({
         name: 'Marieliez Pharmacy',
         short_name: 'Marieliez',
         description:
-          'Thoughtful care, trusted guidance, and everyday wellness from Marieliez Pharmacy.',
+          'Neighbourhood pharmacy care in Nasr City and New Cairo from Marieliez Pharmacy.',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',
         display: 'standalone',

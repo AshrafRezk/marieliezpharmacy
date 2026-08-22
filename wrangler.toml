@@ -1,4 +1,4 @@
-# Cloudflare Pages — preferred host for visitors in Egypt.
+# Cloudflare Pages: preferred host for visitors in Egypt.
 # Netlify edge IPs currently time out from Egyptian ISPs; Cloudflare does not.
 #
 # First-time deploy:

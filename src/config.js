@@ -10,7 +10,7 @@ export const CURRENCY = 'EGP'
 /** Format a catalog price with approximate marker (Talabat-sourced, may change). */
 export function formatPrice(amount) {
   const n = Number(amount)
-  if (!Number.isFinite(n)) return `~ ${CURRENCY} —`
+  if (!Number.isFinite(n)) return `~ ${CURRENCY}`
   const formatted = Number.isInteger(n)
     ? String(n)
     : n.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })

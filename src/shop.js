@@ -83,10 +83,10 @@ function buildOrderMessage() {
   const lines = cartLines()
   const rows = lines.map(
     ({ product, qty }) =>
-      `• ${qty}× ${product.title} — ${formatPrice(product.price * qty)}`,
+      `• ${qty}× ${product.title}: ${formatPrice(product.price * qty)}`,
   )
   return [
-    'Hello Marieliez Pharmacy — I would like to order:',
+    'Hello Marieliez Pharmacy, I would like to order:',
     '',
     ...rows,
     '',

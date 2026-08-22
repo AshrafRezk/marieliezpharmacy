@@ -1,7 +1,7 @@
 /**
  * Shared interaction feedback: haptics, soft UI tones, and click-driven
  * ambient background motion (ripples + light motion blur).
- * Wired once via event delegation — does not block default map/link behavior.
+ * Wired once via event delegation; does not block default map/link behavior.
  */
 
 const MUTE_KEY = 'marieliez-sound-muted'
@@ -90,7 +90,7 @@ function unlockAudio() {
 }
 
 /**
- * Soft UI tap via oscillators — low gain, brief.
+ * Soft UI tap via oscillators: low gain, brief.
  * @param {'tap' | 'soft' | 'confirm'} kind
  */
 function playTone(kind = 'tap') {
@@ -141,7 +141,7 @@ function playTone(kind = 'tap') {
 }
 
 /**
- * Short Vibration API patterns — tasteful taps only.
+ * Short Vibration API patterns: tasteful taps only.
  * @param {'tap' | 'soft' | 'confirm'} kind
  */
 function vibrate(kind = 'tap') {

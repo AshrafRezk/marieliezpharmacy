@@ -22,7 +22,7 @@ export const compounds = [
   {
     id: 'sodic-eastown',
     name: 'SODIC Eastown',
-    context: 'SODIC Eastown — East Cairo (Sakneen SODIC public map).',
+    context: 'SODIC Eastown in East Cairo (Sakneen SODIC public map).',
     source: 'sakneen',
     logo: '/compounds/sodic-eastown.png',
     ring: [
@@ -49,7 +49,7 @@ export const compounds = [
   {
     id: 'sodic-vilette',
     name: 'Villette',
-    context: 'Villette — East Cairo (Sakneen SODIC public map).',
+    context: 'Villette in East Cairo (Sakneen SODIC public map).',
     source: 'sakneen',
     logo: '/compounds/sodic-vilette.png',
     ring: [
@@ -75,7 +75,7 @@ export const compounds = [
   {
     id: 'sodic-kattameya-plaza',
     name: 'Kattameya Plaza',
-    context: 'Kattameya Plaza — East Cairo (Sakneen SODIC public map).',
+    context: 'Kattameya Plaza in East Cairo (Sakneen SODIC public map).',
     source: 'sakneen',
     logo: '/compounds/sodic-kattameya-plaza.png',
     ring: [
@@ -88,7 +88,7 @@ export const compounds = [
   {
     id: 'sodic-ednc',
     name: 'EDNC',
-    context: 'EDNC — East Cairo (Sakneen SODIC public map).',
+    context: 'EDNC in East Cairo (Sakneen SODIC public map).',
     source: 'sakneen',
     logo: '/compounds/sodic-ednc.png',
     ring: [
@@ -104,7 +104,7 @@ export const compounds = [
   {
     id: 'sodic-sodic-east',
     name: 'SODIC East',
-    context: 'SODIC East — East Cairo (Sakneen SODIC public map).',
+    context: 'SODIC East in East Cairo (Sakneen SODIC public map).',
     source: 'sakneen',
     logo: '/compounds/sodic-sodic-east.png',
     ring: [

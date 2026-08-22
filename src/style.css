@@ -1,5 +1,5 @@
 :root {
-  /* Apple-gloss pharmacy palette — deep charcoal + mint teal accent */
+  /* Apple-gloss pharmacy palette - deep charcoal + mint teal accent */
   --accent: #3dd6c3;
   --accent-soft: #7ee8d8;
   --accent-deep: #0f766e;
@@ -171,7 +171,7 @@ html.feedback-reduced .atmosphere {
   transition: none;
 }
 
-/* —— Top bar (Apple glass + M3 surface) —— */
+/* -- Top bar (Apple glass + M3 surface) -- */
 .top-bar {
   position: sticky;
   top: 0;
@@ -278,7 +278,7 @@ button.chip-cta {
   filter: brightness(0.94);
 }
 
-/* —— Hero —— */
+/* -- Hero -- */
 .hero {
   display: flex;
   flex-direction: column;
@@ -355,7 +355,7 @@ button.chip-cta {
   animation: rise 0.9s var(--ease-out) 0.48s forwards;
 }
 
-/* —— Buttons (M3 filled / tonal + Apple press) —— */
+/* -- Buttons (M3 filled / tonal + Apple press) -- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -426,7 +426,7 @@ button.chip-cta {
   color: var(--md-sys-color-on-surface);
 }
 
-/* —— Sections —— */
+/* -- Sections -- */
 .panel {
   width: min(44rem, calc(100% - 2.5rem));
   margin: 0 auto;
@@ -535,7 +535,61 @@ button.chip-cta {
   font-size: 0.95rem;
 }
 
-/* —— Emergency / urgent priority —— */
+.faq-list {
+  margin: var(--space-10) 0 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.faq-item {
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 0 0 1px var(--md-sys-color-outline-variant),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-5);
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  float: right;
+  color: var(--accent-soft);
+  font-weight: 500;
+}
+
+.faq-item[open] summary::after {
+  content: '–';
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-5);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+  max-width: 36rem;
+}
+
+.faq-item .inline-link {
+  color: var(--accent-soft);
+}
+
+/* Emergency / urgent priority */
 .panel-emergency {
   position: relative;
 }
@@ -684,7 +738,7 @@ button.chip-cta {
   width: min(100%, 22rem);
 }
 
-/* —— Brands showcase —— */
+/* -- Brands showcase -- */
 .brand-logos {
   list-style: none;
   margin: var(--space-10) 0 0;
@@ -723,7 +777,7 @@ button.chip-cta {
   max-width: 36rem;
 }
 
-/* —— Map —— */
+/* -- Map -- */
 .map-frame {
   position: relative;
   margin-top: var(--space-10);
@@ -972,7 +1026,7 @@ button.chip-cta {
   overflow: hidden !important;
 }
 
-/* Hard-cap marker chips — avoid native-resolution logo blowouts */
+/* Hard-cap marker chips - avoid native-resolution logo blowouts */
 .map-marker-pharmacy.leaflet-marker-icon,
 .map-marker-pharmacy {
   width: 44px !important;
@@ -1042,7 +1096,7 @@ button.chip-cta {
   object-fit: contain !important;
 }
 
-/* Match compound logo chip size — initials instead of icon */
+/* Match compound logo chip size - initials instead of icon */
 .map-marker-hospital.leaflet-marker-icon,
 .map-marker-hospital {
   width: 40px !important;
@@ -1198,7 +1252,7 @@ a.contact-tile:active {
   color: var(--md-sys-color-on-surface);
 }
 
-/* —— Mobile dock (Apple tab bar × M3 nav bar) —— */
+/* -- Mobile dock (Apple tab bar × M3 nav bar) -- */
 .dock {
   position: fixed;
   left: 50%;
@@ -1254,7 +1308,7 @@ a.contact-tile:active {
   background: var(--accent-muted);
 }
 
-/* —— Install toast —— */
+/* -- Install toast -- */
 .toast {
   position: fixed;
   left: 50%;
@@ -1345,7 +1399,7 @@ a.contact-tile:active {
   }
 }
 
-/* —— Shop / cart —— */
+/* -- Shop / cart -- */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -1786,7 +1840,7 @@ body.cart-open {
   overflow: hidden;
 }
 
-/* —— Tablet / desktop —— */
+/* -- Tablet / desktop -- */
 @media (min-width: 720px) {
   body {
     padding-bottom: 0;
