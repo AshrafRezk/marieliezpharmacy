@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,16 +6,156 @@
     <title>Marieliez Pharmacy | Care That Feels Like Family</title>
     <meta
       name="description"
-      content="Your neighbourhood pharmacy in Cairo for medicines, wellness, mother and baby care, beauty, personal care and more."
+      content="Your neighbourhood pharmacy in Cairo for medicines, wellness, mother and baby care, beauty, and personal care."
     />
-    <meta property="og:title" content="Marieliez Pharmacy" />
-    <meta property="og:description" content="Professional care. Personal connection." />
-    <meta property="og:type" content="website" />
-    <link rel="icon" href="/marieliez-logo.jpg" />
-    <link rel="shortcut icon" href="/marieliez-logo.jpg" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <header class="site-header">
+      <a class="logo" href="#top" aria-label="Marieliez Pharmacy home">
+        <img src="assets/marieliez-logo.jpg" alt="Marieliez Pharmacy" />
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#categories">Categories</a>
+        <a href="#locations">Locations</a>
+        <a href="#contact">Contact</a>
+        <a class="nav-whatsapp" href="https://wa.me/201121111605" target="_blank" rel="noreferrer"
+          >WhatsApp</a
+        >
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Your neighbourhood pharmacy</p>
+          <h1>Marieliez Pharmacy</h1>
+          <p class="lede">Care that feels like family — medicines, wellness, and advice you can trust.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://wa.me/201121111605" target="_blank" rel="noreferrer"
+              >Chat with a pharmacist</a
+            >
+            <a class="btn btn-ghost" href="#locations">Find a branch</a>
+          </div>
+        </div>
+        <div class="hero-media" role="img" aria-label="Marieliez pharmacist helping a customer"></div>
+      </section>
+
+      <section class="about" id="about">
+        <div class="section-intro">
+          <p class="eyebrow">About Marieliez</p>
+          <h2>A pharmacy with a human touch.</h2>
+        </div>
+        <div class="about-copy">
+          <p>
+            Healthcare starts with listening. Our team combines professional knowledge with genuine care,
+            helping every customer make confident choices for their health.
+          </p>
+          <p>
+            Whether you need daily essentials, advice on a new routine, or help finding the right product,
+            you will always be welcomed and cared for.
+          </p>
+        </div>
+      </section>
+
+      <section class="categories" id="categories">
+        <div class="section-intro">
+          <p class="eyebrow">What we offer</p>
+          <h2>Everyday wellbeing, under one roof.</h2>
+          <p>Choose a category and send a quick WhatsApp inquiry.</p>
+        </div>
+        <div class="category-list">
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Prescription%20Medicines." target="_blank" rel="noreferrer">Prescription Medicines</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Vitamins%20%26%20Supplements." target="_blank" rel="noreferrer">Vitamins &amp; Supplements</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Mother%20%26%20Baby." target="_blank" rel="noreferrer">Mother &amp; Baby</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Skin%20%26%20Beauty." target="_blank" rel="noreferrer">Skin &amp; Beauty</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20First%20Aid%20%26%20Medical%20Supplies." target="_blank" rel="noreferrer">First Aid &amp; Medical Supplies</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Personal%20Care." target="_blank" rel="noreferrer">Personal Care</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Chronic%20Care." target="_blank" rel="noreferrer">Chronic Care</a>
+          <a href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20inquire%20about%20Fitness%20%26%20Nutrition." target="_blank" rel="noreferrer">Fitness &amp; Nutrition</a>
+        </div>
+      </section>
+
+      <section class="beauty">
+        <div class="beauty-copy">
+          <p class="eyebrow">Beauty &amp; dermo</p>
+          <h2>All your favourites are here.</h2>
+          <p>Ask us for L’Oréal, La Roche-Posay, YSL Beauty, Kérastase, and more.</p>
+          <a
+            class="btn btn-primary"
+            href="https://wa.me/201121111605?text=Hello%20Marieliez%20Pharmacy!%20I%20would%20like%20to%20ask%20about%20a%20beauty%20product."
+            target="_blank"
+            rel="noreferrer"
+            >Ask about a beauty product</a
+          >
+        </div>
+        <img
+          class="beauty-image"
+          src="assets/beauty-editorial.webp"
+          alt="Premium skincare and haircare collection"
+        />
+      </section>
+
+      <section class="locations" id="locations">
+        <div class="section-intro">
+          <p class="eyebrow">Find us</p>
+          <h2>Two branches. One standard of care.</h2>
+        </div>
+        <div class="branch-list">
+          <article>
+            <p class="branch-area">Nasr City</p>
+            <h3>Al Golf Branch</h3>
+            <p>23 Ahmed Tayseer St., Al Golf, Nasr City</p>
+            <a href="https://maps.app.goo.gl/itCe3b3ErhgemsJL6" target="_blank" rel="noreferrer"
+              >Open in Google Maps</a
+            >
+          </article>
+          <article>
+            <p class="branch-area">New Cairo</p>
+            <h3>Tagamoa Branch</h3>
+            <p>Highland Park Mall, El Andalus, New Cairo</p>
+            <a href="https://maps.app.goo.gl/u3yFYJGjR36xJw696?g_st=ac" target="_blank" rel="noreferrer"
+              >Open in Google Maps</a
+            >
+          </article>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <div class="section-intro">
+          <p class="eyebrow">Let’s talk</p>
+          <h2>How can we help today?</h2>
+        </div>
+        <div class="contact-list">
+          <a href="https://wa.me/201121111605" target="_blank" rel="noreferrer">
+            <span>WhatsApp or call</span>
+            <strong>+20 11 2111 1605</strong>
+          </a>
+          <a href="mailto:info@marieliezpharmacy.com">
+            <span>Email us</span>
+            <strong>info@marieliezpharmacy.com</strong>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <img src="assets/marieliez-logo.jpg" alt="Marieliez Pharmacy" />
+      <p>Professional care. Personal connection.</p>
+      <small>&copy; <span id="year"></span> Marieliez Pharmacy. All rights reserved.</small>
+    </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>

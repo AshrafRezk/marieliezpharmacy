@@ -1,58 +1,19 @@
-# Marieliez Pharmacy Landing Page
+# Marieliez Pharmacy
 
-Production-ready responsive pharmacy landing page built with React, TypeScript, Vite, Tailwind CSS and Leaflet/OpenStreetMap.
+Simple static landing page — plain HTML, CSS, and a little JavaScript. No framework.
 
-## Included
+## Local preview
 
-- Official Marieliez logo and favicon
-- Interactive product-category WhatsApp inquiries
-- Embedded official Facebook videos
-- Animated OpenStreetMap branch experience
-- Responsive motion system with reduced-motion accessibility
-- Optimized WebP editorial imagery
-- SEO metadata and production build configuration
-
-## Requirements
-
-- Node.js 22.13 or later
-- npm
-
-## Run locally
+Open `index.html` in a browser, or from this folder:
 
 ```bash
-npm install
-npm run dev
+npx --yes serve .
 ```
 
-Open the local URL printed by the development server (usually `http://localhost:5173`).
+## Deploy (Netlify)
 
-## Production build
+Connect the GitHub repo. `netlify.toml` publishes the site root with no build step.
 
-```bash
-npm install
-npm run build
-```
+## Contact settings
 
-The production artifact is written to `dist/`.
-
-## Before deployment
-
-The primary contact settings are centralized near the top of `src/App.tsx`:
-
-```ts
-const WHATSAPP_NUMBER = "201121111605";
-```
-
-Email, branch addresses, Google Maps links and coordinates are also in `src/App.tsx` and `src/PharmacyMap.tsx`.
-
-## Hosting (Netlify)
-
-Connect the GitHub repository and deploy the `main` branch. The checked-in `netlify.toml` supplies:
-
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Node.js: 22
-
-After the first successful deployment, attach `marieliezpharmacy.com` in Netlify domain settings.
-
-Do not commit `node_modules` or `dist`.
+WhatsApp number and branch details live in `index.html`.
