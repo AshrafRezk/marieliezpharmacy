@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Marieliez Pharmacy — thoughtful care, trusted guidance, and everyday wellness."
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Marieliez" />
+    <meta name="format-detection" content="telephone=yes" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <title>Marieliez Pharmacy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <header class="top-bar" data-elevate>
+      <a class="brand" href="#top" aria-label="Marieliez Pharmacy home">
+        <img src="/pwa-192.png" alt="" width="36" height="36" />
+        <span class="brand-text">
+          <span class="brand-name">Marieliez</span>
+          <span class="brand-sub">Pharmacy</span>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="#care">Care</a>
+        <a href="#visit">Visit</a>
+        <a class="chip-cta" href="#visit">Get in touch</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-stage">
+          <img
+            class="hero-logo"
+            src="/logo.png"
+            alt="Marieliez Pharmacy"
+            width="240"
+            height="240"
+            fetchpriority="high"
+          />
+        </div>
+        <h1 class="hero-title">Care you can trust, close to home.</h1>
+        <p class="hero-lead">
+          Prescriptions, wellness guidance, and personal attention — delivered
+          with clarity and care.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-filled" href="#visit">
+            <span>Plan a visit</span>
+          </a>
+          <a class="btn btn-tonal" href="#care">
+            <span>Explore care</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="panel" id="care" data-reveal>
+        <p class="eyebrow">What we offer</p>
+        <h2>Pharmacy support for everyday life.</h2>
+        <p class="lede">
+          From filling prescriptions to answering questions about your
+          medications, we’re here to make care simple and dependable.
+        </p>
+
+        <ul class="rail" role="list">
+          <li class="rail-item">
+            <span class="rail-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M8.5 4.5h7v3.2c0 1.9-1.6 3.4-3.5 3.4S8.5 9.6 8.5 7.7V4.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M9 11.5h6l1.2 7.2a1.8 1.8 0 0 1-1.8 2.1H9.6a1.8 1.8 0 0 1-1.8-2.1L9 11.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </span>
+            <div>
+              <h3>Prescriptions</h3>
+              <p>Reliable fills and refills you can count on.</p>
+            </div>
+          </li>
+          <li class="rail-item">
+            <span class="rail-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="3.25" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M5.5 19.2c.8-3.2 3.3-5 6.5-5s5.7 1.8 6.5 5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <div>
+              <h3>Counseling</h3>
+              <p>Clear guidance on dosing, interactions, and use.</p>
+            </div>
+          </li>
+          <li class="rail-item">
+            <span class="rail-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 4.5v15M7.5 9.5h9M7.5 14.5h9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <rect
+                  x="5.5"
+                  y="4.5"
+                  width="13"
+                  height="15"
+                  rx="3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </span>
+            <div>
+              <h3>Wellness</h3>
+              <p>Everyday essentials curated for your health.</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel panel-visit" id="visit" data-reveal>
+        <p class="eyebrow">Visit us</p>
+        <h2>We’re ready when you need us.</h2>
+        <p class="lede">
+          Stop by or reach out — our team is happy to help with your next
+          prescription or question.
+        </p>
+
+        <div class="contact-grid">
+          <a class="contact-tile" href="tel:+10000000000">
+            <span class="tile-label">Call</span>
+            <span class="tile-value">+1 (000) 000-0000</span>
+          </a>
+          <a class="contact-tile" href="mailto:hello@marieliezpharmacy.com">
+            <span class="tile-label">Email</span>
+            <span class="tile-value">hello@marieliezpharmacy.com</span>
+          </a>
+          <div class="contact-tile contact-tile-static" role="group" aria-label="Hours">
+            <span class="tile-label">Hours</span>
+            <span class="tile-value">
+              Mon–Fri 9:00–18:00<br />
+              Sat 10:00–14:00
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <img src="/logo-trimmed.png" alt="" width="48" height="62" />
+      <p>&copy; <span id="year"></span> Marieliez Pharmacy</p>
+    </footer>
+
+    <nav class="dock" aria-label="Quick navigation">
+      <a class="dock-item is-active" href="#top" data-nav="top">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+          <path
+            d="M4.5 10.8 12 4.5l7.5 6.3V19a1.5 1.5 0 0 1-1.5 1.5h-4.2v-5.2h-3.6V20.5H6A1.5 1.5 0 0 1 4.5 19v-8.2Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>Home</span>
+      </a>
+      <a class="dock-item" href="#care" data-nav="care">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+          <path
+            d="M12 4.5v15M7.5 9.5h9M7.5 14.5h9"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <rect
+            x="5.5"
+            y="4.5"
+            width="13"
+            height="15"
+            rx="3"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+        </svg>
+        <span>Care</span>
+      </a>
+      <a class="dock-item" href="#visit" data-nav="visit">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+          <path
+            d="M12 21s6.5-5.2 6.5-10.2A6.5 6.5 0 0 0 12 4.3a6.5 6.5 0 0 0-6.5 6.5C5.5 15.8 12 21 12 21Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+          <circle cx="12" cy="10.8" r="2.2" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+        <span>Visit</span>
+      </a>
+    </nav>
+
+    <div class="toast" id="install-toast" hidden>
+      <div class="toast-body">
+        <img src="/pwa-192.png" alt="" width="36" height="36" />
+        <div>
+          <strong>Install Marieliez</strong>
+          <p>Add to your Home Screen for quick access.</p>
+        </div>
+      </div>
+      <div class="toast-actions">
+        <button type="button" class="text-btn" id="install-dismiss">Not now</button>
+        <button type="button" class="btn btn-filled btn-sm" id="install-accept">Install</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
