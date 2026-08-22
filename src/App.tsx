@@ -1,10 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import dynamic from "next/dynamic";
+import { type ReactNode, Suspense, lazy, useState } from "react";
 import MotionSystem from "./MotionSystem";
 
-const PharmacyMap = dynamic(() => import("./PharmacyMap"), { ssr: false });
+const PharmacyMap = lazy(() => import("./PharmacyMap"));
 
 const WHATSAPP_NUMBER = "201121111605";
 const categories = [
@@ -19,7 +16,7 @@ const categories = [
 ];
 
 const Icon = ({ name }: { name: "pin" | "phone" | "mail" | "clock" | "arrow" | "menu" | "close" }) => {
-  const paths: Record<string, React.ReactNode> = {
+  const paths: Record<string, ReactNode> = {
     pin: <><path d="M12 21s7-5.2 7-12A7 7 0 1 0 5 9c0 6.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></>,
     phone: <path d="M6.6 3.8 9 7.6 7.4 9.2c1.2 2.6 3 4.4 5.6 5.6l1.6-1.6 3.8 2.4-.9 4.1c-7.7.7-13.9-5.5-13.2-13.2l2.3-2.7Z"/>,
     mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></>,
@@ -34,7 +31,7 @@ function whatsappLink(category?: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-export default function Home() {
+export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [category, setCategory] = useState(categories[0].title);
   return <main>
@@ -61,7 +58,7 @@ export default function Home() {
 
     <section className="care-promises"><div className="promise emergency"><span className="promise-number">01</span><div><p className="eyebrow">WHEN IT MATTERS</p><h2>Urgent essentials,<br/><em>treated urgently.</em></h2><p>When an important medicine or respiratory product such as an Evohaler is needed, our pharmacists make the search and availability check a priority.</p><a href={whatsappLink("an urgent or emergency medicine, including Evohalers")} target="_blank" rel="noreferrer">Check urgent availability <Icon name="arrow" /></a><small>For life-threatening emergencies, contact emergency services immediately. Prescription medicines are supplied according to applicable requirements.</small></div></div><div className="promise storage"><span className="promise-number">02</span><div><p className="eyebrow">MEDICINE FIRST</p><h2>Safe storage is<br/><em>part of the treatment.</em></h2><p>Medicine integrity comes before convenience. We prioritise appropriate storage conditions, temperature awareness, careful handling and expiry control so products are protected until they reach you.</p><div className="storage-points"><span>Temperature aware</span><span>Expiry controlled</span><span>Carefully handled</span></div></div></div></section>
 
-    <section className="locations-section" id="locations"><div className="location-title"><div><p className="eyebrow">FIND US</p><h2>Two branches.<br/><em>One standard of care.</em></h2></div><p>Tap a branch and watch the map take you there. Zoom, pan or open Google Maps for turn-by-turn directions.</p></div><PharmacyMap /></section>
+    <section className="locations-section" id="locations"><div className="location-title"><div><p className="eyebrow">FIND US</p><h2>Two branches.<br/><em>One standard of care.</em></h2></div><p>Tap a branch and watch the map take you there. Zoom, pan or open Google Maps for turn-by-turn directions.</p></div><Suspense fallback={<div className="map-experience" aria-busy="true" />}><PharmacyMap /></Suspense></section>
 
     <section className="contact" id="contact"><div className="contact-intro"><p className="eyebrow">LET&apos;S TALK</p><h2>How can we<br/><em>help today?</em></h2><p>Our friendly team is just a message, call or visit away.</p></div><div className="contact-links"><a href={whatsappLink()} target="_blank" rel="noreferrer"><span><Icon name="phone" /></span><div><small>WHATSAPP OR CALL</small><strong>+20 11 2111 1605</strong></div><Icon name="arrow" /></a><a href="mailto:info@marieliezpharmacy.com"><span><Icon name="mail" /></span><div><small>EMAIL US</small><strong>info@marieliezpharmacy.com</strong></div><Icon name="arrow" /></a><div className="hours"><span><Icon name="clock" /></span><div><small>OPENING HOURS</small><strong>Contact your nearest branch</strong><p>for today&apos;s working hours</p></div></div></div></section>
     <footer><a className="brand light" href="#top"><img className="brand-logo" src="/marieliez-logo.jpg" alt="Marieliez Pharmacy" /></a><p>Professional care. Personal connection.</p><div><a href="#about">About</a><a href="#categories">Categories</a><a href="#locations">Locations</a><a href="#contact">Contact</a></div><small>© {new Date().getFullYear()} Marieliez Pharmacy. All rights reserved.</small></footer>

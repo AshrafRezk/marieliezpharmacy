@@ -1,6 +1,6 @@
 # Marieliez Pharmacy Landing Page
 
-Production-ready responsive pharmacy landing page built with React, TypeScript, Tailwind CSS, Vinext and Leaflet/OpenStreetMap.
+Production-ready responsive pharmacy landing page built with React, TypeScript, Vite, Tailwind CSS and Leaflet/OpenStreetMap.
 
 ## Included
 
@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by the development server.
+Open the local URL printed by the development server (usually `http://localhost:5173`).
 
 ## Production build
 
@@ -37,24 +37,22 @@ The production artifact is written to `dist/`.
 
 ## Before deployment
 
-The primary contact settings are centralized near the top of `app/page.tsx`:
+The primary contact settings are centralized near the top of `src/App.tsx`:
 
 ```ts
 const WHATSAPP_NUMBER = "201121111605";
 ```
 
-Email, branch addresses, Google Maps links and coordinates are also in `app/page.tsx` and `app/PharmacyMap.tsx`.
+Email, branch addresses, Google Maps links and coordinates are also in `src/App.tsx` and `src/PharmacyMap.tsx`.
 
-## Hosting
+## Hosting (Netlify)
 
-The repository supports both the Sites/Vinext build and Netlify's current Next.js runtime.
+Connect the GitHub repository and deploy the `main` branch. The checked-in `netlify.toml` supplies:
 
-For Netlify, connect the GitHub repository and deploy the `main` branch. The checked-in `netlify.toml` supplies the required settings:
-
-- Build command: `npm run build:netlify`
-- Publish directory: `.next`
+- Build command: `npm run build`
+- Publish directory: `dist`
 - Node.js: 22
 
-Netlify automatically applies its current Next.js adapter during the build. After the first successful deployment, attach `marieliezpharmacy.com` in Netlify's domain settings.
+After the first successful deployment, attach `marieliezpharmacy.com` in Netlify domain settings.
 
-Do not commit `node_modules`, `dist`, `.sites-runtime` or `.wrangler`.
+Do not commit `node_modules` or `dist`.
