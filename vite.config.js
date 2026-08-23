@@ -65,6 +65,9 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'product-images',
+              // CDN has no ACAO; no-cors opaque responses still work for <img>.
+              fetchOptions: { mode: 'no-cors' },
+              cacheableResponse: { statuses: [0, 200] },
               expiration: {
                 maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 14,

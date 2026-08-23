@@ -1,6 +1,11 @@
 /** Shared contact / ordering config for Marieliez Pharmacy */
-export const WHATSAPP_E164 = '201121111605'
+
+/** Digits only — tel: and wa.me must never include spaces or punctuation. */
+const e164Digits = (value) => String(value).replace(/\D/g, '')
+
+export const WHATSAPP_E164 = e164Digits('201121111605')
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_E164}`
+/** Human-readable label only; use PHONE_TEL / WHATSAPP_URL for hrefs. */
 export const PHONE_DISPLAY = '+20 112 111 1605'
 export const PHONE_TEL = `tel:+${WHATSAPP_E164}`
 
