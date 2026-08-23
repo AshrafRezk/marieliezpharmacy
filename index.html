@@ -13,7 +13,7 @@
     <meta name="author" content="Marieliez Pharmacy" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#0a1210" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -21,6 +21,26 @@
     <meta name="format-detection" content="telephone=yes" />
     <meta name="geo.region" content="EG-C" />
     <meta name="geo.placename" content="Cairo, Egypt" />
+    <script>
+      (function () {
+        try {
+          var key = 'marieliez-theme'
+          var saved = localStorage.getItem(key)
+          var theme =
+            saved === 'light' || saved === 'dark'
+              ? saved
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+          document.documentElement.setAttribute('data-theme', theme)
+          document.documentElement.style.colorScheme = theme
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#f4fbf9' : '#0a1210')
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+    </script>
 
     <link rel="canonical" href="https://marieliezpharmacy.com/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -197,33 +217,110 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://talabat.dhmedia.io" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
     <div class="atmosphere" aria-hidden="true"></div>
 
+    <div
+      class="welcome-overlay"
+      data-welcome
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="welcome-title"
+    >
+      <button
+        type="button"
+        class="welcome-backdrop"
+        data-welcome-dismiss
+        data-i18n-aria="welcome.dismissAria" aria-label="Close welcome video"
+      ></button>
+      <div class="welcome-card">
+        <p class="welcome-eyebrow" data-i18n="welcome.eyebrow">A note from the owners</p>
+        <h2 id="welcome-title" class="welcome-title" data-i18n="welcome.title">Welcome to Marieliez.</h2>
+        <p class="welcome-lede" data-i18n="welcome.lede">
+          A short hello from our family pharmacy: care you can trust, close to home.
+        </p>
+        <div class="welcome-media">
+          <video
+            class="welcome-video"
+            src="/videos/welcome-owners.mp4"
+            muted
+            playsinline
+            autoplay
+            preload="metadata"
+            poster="/logo-trimmed.png"
+          ></video>
+        </div>
+        <div class="welcome-actions">
+          <button
+            type="button"
+            class="btn btn-tonal welcome-unmute"
+            data-welcome-unmute
+            data-muted="1"
+            aria-pressed="false"
+             data-i18n-aria="welcome.unmuteAria" aria-label="Unmute welcome video"
+          ><span data-i18n="welcome.unmute">Unmute</span></button>
+          <button type="button" class="btn btn-filled" data-welcome-skip data-i18n="welcome.skip">
+            Enter the pharmacy
+          </button>
+        </div>
+      </div>
+    </div>
+
     <header class="top-bar" data-elevate>
-      <a class="brand" href="#top" aria-label="Marieliez Pharmacy home">
+      <a class="brand" href="#top" data-i18n-aria="nav.brandAria" aria-label="Marieliez Pharmacy home">
         <img src="/pwa-192.png" alt="" width="36" height="36" />
         <span class="brand-text">
-          <span class="brand-name">Marieliez</span>
-          <span class="brand-sub">Pharmacy</span>
+          <span class="brand-name" data-i18n="brand.name">Marieliez</span>
+          <span class="brand-sub" data-i18n="brand.sub">Pharmacy</span>
         </span>
       </a>
-      <nav class="top-nav" aria-label="Primary">
-        <a href="#care">Care</a>
-        <a href="#shop">Shop</a>
-        <a href="#emergency">Urgent</a>
-        <a href="#brands">Brands</a>
-        <a href="#map">Map</a>
-        <a href="#faq">FAQ</a>
-        <a href="#visit">Visit</a>
+      <div class="top-bar-actions">
+        <button
+          type="button"
+          class="theme-toggle"
+          data-theme-toggle
+          data-i18n-aria="theme.toLight"
+          aria-label="Switch to light mode"
+          aria-pressed="false"
+        >
+          <span class="theme-toggle-icon theme-toggle-icon-sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+          </span>
+          <span class="theme-toggle-icon theme-toggle-icon-moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z" />
+            </svg>
+          </span>
+        </button>
+        <button
+          type="button"
+          class="lang-toggle"
+          data-lang-toggle
+          aria-label="Switch to Arabic"
+        >
+          العربية
+        </button>
+      </div>
+      <nav class="top-nav" data-i18n-aria="nav.primaryAria" aria-label="Primary">
+        <a href="#care" data-i18n="nav.care">Care</a>
+        <a href="#shop" data-i18n="nav.shop">Shop</a>
+        <a href="#emergency" data-i18n="nav.urgent">Urgent</a>
+        <a href="#brands" data-i18n="nav.brands">Brands</a>
+        <a href="#map" data-i18n="nav.map">Map</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+        <a href="#visit" data-i18n="nav.visit">Visit</a>
         <button type="button" class="chip-cta top-cart" data-cart-open>
-          Cart
+          <span data-i18n="nav.cart">Cart</span>
           <span class="cart-badge" data-cart-count hidden>0</span>
         </button>
       </nav>
@@ -235,31 +332,33 @@
           <img
             class="hero-logo"
             src="/logo.png"
+            data-i18n-alt="hero.logoAlt"
             alt="Marieliez Pharmacy"
             width="240"
             height="240"
             fetchpriority="high"
           />
+          <p class="hero-brand" data-i18n="brand.wordmark">Marieliez Pharmacy</p>
         </div>
-        <h1 class="hero-title">Care you can trust, close to home.</h1>
-        <p class="hero-lead">
+        <h1 class="hero-title" data-i18n="hero.title">Care you can trust, close to home.</h1>
+        <p class="hero-lead" data-i18n="hero.lead">
           Marieliez Pharmacy in Nasr City and New Cairo: prescriptions, wellness
           guidance, and personal attention, delivered with clarity and care.
         </p>
         <div class="hero-actions">
           <a class="btn btn-filled" href="#shop">
-            <span>Browse products</span>
+            <span data-i18n="hero.browse">Browse products</span>
           </a>
           <a class="btn btn-tonal" href="#map">
-            <span>Find a branch</span>
+            <span data-i18n="hero.find">Find a branch</span>
           </a>
         </div>
       </section>
 
       <section class="panel" id="care" data-reveal>
-        <p class="eyebrow">What we offer</p>
-        <h2>Pharmacy support for everyday life.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="care.eyebrow">What we offer</p>
+        <h2 data-i18n="care.title">Pharmacy support for everyday life</h2>
+        <p class="lede" data-i18n="care.lede">
           From filling prescriptions to answering questions about your
           medications, Marieliez Pharmacy makes care simple and dependable for
           families across East Cairo and Nasr City.
@@ -282,8 +381,8 @@
               </svg>
             </span>
             <div>
-              <h3>Prescriptions</h3>
-              <p>Reliable fills and refills you can count on.</p>
+              <h3 data-i18n="care.rxTitle">Prescriptions</h3>
+              <p data-i18n="care.rxBody">Reliable fills and refills you can count on.</p>
             </div>
           </li>
           <li class="rail-item">
@@ -299,8 +398,8 @@
               </svg>
             </span>
             <div>
-              <h3>Counseling</h3>
-              <p>Clear guidance on dosing, interactions, and use.</p>
+              <h3 data-i18n="care.counselTitle">Counseling</h3>
+              <p data-i18n="care.counselBody">Clear guidance on dosing, interactions, and use.</p>
             </div>
           </li>
           <li class="rail-item">
@@ -324,28 +423,44 @@
               </svg>
             </span>
             <div>
-              <h3>Wellness</h3>
-              <p>Everyday essentials curated for your health.</p>
+              <h3 data-i18n="care.wellTitle">Wellness</h3>
+              <p data-i18n="care.wellBody">Everyday essentials curated for your health.</p>
             </div>
           </li>
         </ul>
       </section>
 
       <section class="panel panel-shop" id="shop" data-reveal>
-        <p class="eyebrow">Order online</p>
-        <h2>Browse the pharmacy shelf.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="shop.eyebrow">Order online</p>
+        <h2 data-i18n="shop.title">Browse the pharmacy shelf</h2>
+        <p class="lede" data-i18n="shop.lede">
           Search our catalog, add items to your cart, then message us on WhatsApp
           to place your order.
         </p>
-        <p class="price-disclaimer" role="note">Prices are liable to change</p>
+        <p class="price-disclaimer" role="note" data-i18n="shop.priceDisclaimer">
+          Prices are liable to change
+        </p>
+        <p class="shop-catalog-note" role="note" data-i18n="shop.catalogNote">
+          Product names may appear in English (supplier catalog).
+        </p>
+
+        <div class="shop-assist">
+          <button type="button" class="btn btn-tonal shop-feel-btn" data-symptom-open>
+            <span data-i18n="shop.feelCta">How do you feel?</span>
+          </button>
+          <p class="shop-feel-hint" data-i18n="shop.feelHint">
+            Describe a symptom, and we’ll suggest catalog items to discuss with a
+            pharmacist.
+          </p>
+        </div>
 
         <div class="shop-toolbar">
           <label class="shop-search">
-            <span class="visually-hidden">Search products</span>
+            <span class="visually-hidden" data-i18n="shop.searchLabel">Search products</span>
             <input
               type="search"
               data-shop-search
+              data-i18n-placeholder="shop.searchPlaceholder"
               placeholder="Search medicines, skincare, vitamins…"
               autocomplete="off"
               enterkeyhint="search"
@@ -354,13 +469,19 @@
           <p class="shop-meta" data-shop-meta></p>
         </div>
 
-        <div class="shop-chips" data-shop-categories role="toolbar" aria-label="Product categories"></div>
+        <div
+          class="shop-chips"
+          data-shop-categories
+          role="toolbar"
+          data-i18n-aria="shop.categoriesAria"
+          aria-label="Product categories"
+        ></div>
 
         <div class="shop-grid" data-shop-grid></div>
 
         <div class="shop-more-wrap">
           <button type="button" class="btn btn-tonal" data-shop-more hidden>
-            <span>Show more</span>
+            <span data-i18n="shop.more">Show more</span>
           </button>
         </div>
       </section>
@@ -381,28 +502,108 @@
               stroke-linecap="round"
             />
           </svg>
-          <span>Emergency</span>
+          <span data-i18n="emergency.badge">Emergency</span>
         </div>
-        <p class="eyebrow">We always care</p>
-        <h2>Urgent orders come first.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="emergency.eyebrow">We always care</p>
+        <h2 data-i18n="emergency.title">Urgent orders come first</h2>
+        <p class="lede" data-i18n-html="emergency.lede">
           Emergency items are available when you need them most. In urgent cases,
           we prioritize these orders despite traffic, because Marieliez
           <span class="brand-tag">#treatslikefamily</span>.
         </p>
 
-        <div class="emergency-stage" aria-hidden="true">
-          <div class="emergency-stage-glow"></div>
-          <div class="emergency-shelf">
-            <span class="shelf-item shelf-dim"></span>
-            <span class="shelf-item shelf-dim shelf-tall"></span>
-            <span class="shelf-item shelf-dim"></span>
+        <div class="emergency-stage">
+          <div class="emergency-stage-glow" aria-hidden="true"></div>
+          <div class="emergency-compare">
+            <div class="emergency-lane emergency-lane-cos">
+              <p class="emergency-lane-label" data-i18n="emergency.laneCosmetics">Cosmetics</p>
+              <ul class="emergency-products" role="list">
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/product-information-management/6a4bc3f5093c10f0c3e49abd.jpg"
+                    alt="La Roche-Posay Cicaplast B5+ Repairing &amp; Soothing Balm"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Cicaplast B5+</span>
+                </li>
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/product-information-management/628b5f38cb506d38968e2e47.jpg"
+                    alt="Vichy Normaderm Phytosolution Moisturiser"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Vichy Normaderm</span>
+                </li>
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/product-information-management/67179d9a4b7b0fa6bb8af5f9.JPG"
+                    alt="L'Oréal Paris Hyaluron Expert Night Cream"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Hyaluron Expert</span>
+                </li>
+              </ul>
+            </div>
+            <div class="emergency-lane emergency-lane-urgent">
+              <p class="emergency-lane-label" data-i18n="emergency.laneUrgent">Emergency</p>
+              <ul class="emergency-products" role="list">
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/talabat-nv/SSC_PIM/6221060005888.jpg"
+                    alt="Vental Compositum Oral Inhaler with Beclomethasone &amp; Salbutamol"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Vental Inhaler</span>
+                </li>
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/product-information-management/6902361464d3b816f63a228f.JPG"
+                    alt="Pic Solution Insupen Insulin Pen Needles"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Insulin needles</span>
+                </li>
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/talabat-nv/SSC_PIM_2/6224008379027.png"
+                    alt="Swabivent Ipratropium &amp; Salbutamol Solution for Nebulizer"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Nebulizer ampules</span>
+                </li>
+                <li>
+                  <img
+                    src="https://talabat.dhmedia.io/image/product-information-management/69b022a1fe9010c6fb818c73.jpeg"
+                    alt="Accu-Chek Instant Blood Glucose Test Strips"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>Glucose strips</span>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="emergency-focus">
-            <span class="focus-box"></span>
-            <span class="focus-inhaler"></span>
-          </div>
-          <div class="emergency-stage-badge">
+          <div class="emergency-stage-badge" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <path
                 d="M12 3.8 21.2 20H2.8L12 3.8Z"
@@ -417,7 +618,7 @@
                 stroke-linecap="round"
               />
             </svg>
-            <span>Emergency</span>
+            <span data-i18n="emergency.badge">Emergency</span>
           </div>
         </div>
 
@@ -428,38 +629,43 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            <span>WhatsApp for emergencies</span>
+            <span data-i18n="emergency.wa">WhatsApp for emergencies</span>
           </a>
           <a class="btn btn-tonal" href="tel:+201121111605">
-            <span>Call +20 112 111 1605</span>
+            <span data-i18n="emergency.call">Call +20 112 111 1605</span>
           </a>
         </div>
       </section>
 
       <section class="panel panel-brands" id="brands" data-reveal>
-        <p class="eyebrow">Cosmetics</p>
-        <h2>Top-notch beauty brands, in store.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="brands.eyebrow">Cosmetics</p>
+        <h2 data-i18n="brands.title">Top-notch beauty brands, in store</h2>
+        <p class="lede" data-i18n="brands.lede">
           Dermocosmetics and haircare you trust, curated for Cairo’s everyday
           routines.
         </p>
 
-        <ul class="brand-logos" role="list" aria-label="Featured cosmetics brands">
+        <ul
+          class="brand-logos"
+          role="list"
+          data-i18n-aria="brands.aria"
+          aria-label="Featured cosmetics brands"
+        >
           <li>
             <img
-              src="/brands/vichy.png"
+              src="/brands/vichy.svg"
               alt="Vichy Laboratoires"
               width="160"
-              height="51"
+              height="47"
               loading="lazy"
             />
           </li>
           <li>
             <img
-              src="/brands/kerastase.png"
+              src="/brands/kerastase.svg"
               alt="Kérastase Paris"
               width="160"
-              height="50"
+              height="43"
               loading="lazy"
             />
           </li>
@@ -483,35 +689,46 @@
           </li>
         </ul>
 
-        <p class="brands-note">
+        <p class="brands-note" data-i18n="brands.note">
           Ask our pharmacists for guidance on Vichy, Kérastase, La Roche-Posay,
-          L'Oréal, and peer dermocosmetic lines.
+          L'Oréal, and similar dermocosmetic lines.
         </p>
       </section>
 
       <section class="panel panel-map" id="map" data-reveal>
-        <p class="eyebrow">Locations</p>
-        <h2>Find a Marieliez branch.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="map.eyebrow">Locations</p>
+        <h2 data-i18n="map.title">Find a Marieliez branch</h2>
+        <p class="lede" data-i18n="map.lede">
           Two neighbourhood pharmacies in Nasr City and New Cairo. Tap a branch
           to fly the map there, with East Cairo compounds and hospitals
-          highlighted for orientation.
+          highlighted nearby.
         </p>
 
-        <div class="map-frame" role="region" aria-label="Interactive map of Marieliez Pharmacy branches">
-          <div id="pharmacy-map" class="pharmacy-map" tabindex="0" aria-label="Map of pharmacy branches"></div>
-          <ul class="map-legend" aria-label="Map legend">
+        <div
+          class="map-frame"
+          role="region"
+          data-i18n-aria="map.regionAria"
+          aria-label="Interactive map of Marieliez Pharmacy branches"
+        >
+          <div
+            id="pharmacy-map"
+            class="pharmacy-map"
+            tabindex="0"
+            data-i18n-aria="map.mapAria"
+            aria-label="Map of pharmacy branches"
+          ></div>
+          <ul class="map-legend" data-i18n-aria="map.legendAria" aria-label="Map legend">
             <li>
               <span class="legend-swatch legend-pharmacy" aria-hidden="true"></span>
-              Pharmacy
+              <span data-i18n="map.legendPharmacy">Pharmacy</span>
             </li>
             <li>
               <span class="legend-swatch legend-hospital" aria-hidden="true"></span>
-              Hospital
+              <span data-i18n="map.legendHospital">Hospital</span>
             </li>
             <li>
               <span class="legend-swatch legend-compound" aria-hidden="true"></span>
-              Compound
+              <span data-i18n="map.legendCompound">Compound</span>
             </li>
           </ul>
         </div>
@@ -523,10 +740,11 @@
             role="button"
             tabindex="0"
             aria-current="false"
+            data-i18n-aria="map.golfAria"
             aria-label="Show Al Golf Branch on the map"
           >
-            <strong>Al Golf Branch</strong>
-            <span>23 Ahmed Tayseer St., Al Golf, Nasr City</span>
+            <strong data-i18n="map.golfName">Al Golf Branch</strong>
+            <span data-i18n="map.golfAddr">23 Ahmed Tayseer St., Al Golf, Nasr City</span>
           </li>
           <li
             class="branch-item"
@@ -534,26 +752,27 @@
             role="button"
             tabindex="0"
             aria-current="false"
+            data-i18n-aria="map.hpAria"
             aria-label="Show Highland Park Branch on the map"
           >
-            <strong>Highland Park Branch</strong>
-            <span>Highland Park Mall, El Andalus, New Cairo</span>
+            <strong data-i18n="map.hpName">Highland Park Branch</strong>
+            <span data-i18n="map.hpAddr">Highland Park Mall, El Andalus, New Cairo</span>
           </li>
         </ul>
       </section>
 
       <section class="panel panel-faq" id="faq" data-reveal>
-        <p class="eyebrow">Questions</p>
-        <h2>Common questions about Marieliez.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="faq.eyebrow">Questions</p>
+        <h2 data-i18n="faq.title">Common questions about Marieliez</h2>
+        <p class="lede" data-i18n="faq.lede">
           Straight answers about our branches, service areas, ordering, and
           urgent care.
         </p>
 
         <div class="faq-list">
           <details class="faq-item">
-            <summary>Where are your branches?</summary>
-            <p>
+            <summary data-i18n="faq.q1">Where are your branches?</summary>
+            <p data-i18n-html="faq.a1">
               Marieliez Pharmacy has two Cairo locations: Al Golf Branch at
               23 Ahmed Tayseer St., Al Golf, Nasr City, and Highland Park Branch
               at Highland Park Mall, El Andalus, New Cairo. Call or WhatsApp
@@ -561,8 +780,8 @@
             </p>
           </details>
           <details class="faq-item">
-            <summary>Which areas and compounds do you serve?</summary>
-            <p>
+            <summary data-i18n="faq.q2">Which areas and compounds do you serve?</summary>
+            <p data-i18n-html="faq.a2">
               We serve Nasr City and New Cairo / East Cairo neighbourhoods,
               including communities around Highland Park such as Akoya,
               SODIC Eastown, Villette, Kattameya Plaza, and EDNC. Message us on
@@ -570,8 +789,8 @@
             </p>
           </details>
           <details class="faq-item">
-            <summary>How do I order online?</summary>
-            <p>
+            <summary data-i18n="faq.q3">How do I order online?</summary>
+            <p data-i18n-html="faq.a3">
               Browse the
               <a class="inline-link" href="#shop">product catalog</a>, add items
               to your cart, then send the order on WhatsApp. You can also message
@@ -580,18 +799,18 @@
             </p>
           </details>
           <details class="faq-item">
-            <summary>What about urgent or emergency orders?</summary>
-            <p>
+            <summary data-i18n="faq.q4">What about urgent or emergency orders?</summary>
+            <p data-i18n-html="faq.a4">
               Urgent orders are prioritized. Contact us right away by
               <a class="inline-link" href="#emergency">WhatsApp or phone</a>
               so the pharmacy team can help quickly.
             </p>
           </details>
           <details class="faq-item">
-            <summary>Which beauty brands do you carry?</summary>
-            <p>
+            <summary data-i18n="faq.q5">Which beauty brands do you carry?</summary>
+            <p data-i18n-html="faq.a5">
               We stock dermocosmetics and haircare from Vichy, Kérastase,
-              La Roche-Posay, L'Oréal, and peer lines. Ask a pharmacist in store
+              La Roche-Posay, L'Oréal, and similar lines. Ask a pharmacist in store
               for guidance.
             </p>
           </details>
@@ -599,13 +818,23 @@
       </section>
 
       <section class="panel panel-visit" id="visit" data-reveal>
-        <p class="eyebrow">Visit us</p>
-        <h2>We’re ready when you need us.</h2>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="visit.eyebrow">Visit us</p>
+        <h2 data-i18n="visit.title">We’re ready when you need us</h2>
+        <p class="lede" data-i18n-html="visit.lede">
           Message us on WhatsApp, call the pharmacy, or follow updates on
           Facebook, then <a class="inline-link" href="#map">jump to the map</a>
           to find your branch.
         </p>
+
+        <div class="delivery-note" data-i18n-html="visit.delivery">
+          <p class="delivery-note-badge">24/7 delivery</p>
+          <p class="delivery-note-copy">
+            Marieliez will always deliver your orders to your doorstep in the
+            quickest time possible and will prioritize your order if you have an
+            urgent case even during traffic, because Marieliez
+            <span class="brand-tag">#treatslikefamily</span>.
+          </p>
+        </div>
 
         <div class="contact-grid">
           <a
@@ -614,17 +843,35 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
+            data-i18n-aria="visit.waAria"
           >
-            <span class="tile-label">WhatsApp</span>
-            <span class="tile-value">Chat with us</span>
+            <span class="tile-copy">
+              <span class="tile-label" data-i18n="visit.waLabel">WhatsApp</span>
+              <span class="tile-value" data-i18n="visit.waValue">Chat with us</span>
+            </span>
+            <span class="tile-icon tile-icon-whatsapp" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                <path
+                  d="M12.04 2C6.58 2 2.15 6.4 2.15 11.84c0 1.96.52 3.86 1.5 5.54L2 22l4.78-1.55a10.05 10.05 0 0 0 5.26 1.43h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2Zm5.77 13.99c-.24.68-1.4 1.24-1.94 1.32-.5.07-1.13.1-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.26-4.79-4.18-4.93-4.38-.14-.2-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.26-.28.57-.35.76-.35h.55c.18 0 .42-.07.65.5.24.58.81 2 .88 2.14.07.14.12.3.02.49-.1.2-.15.32-.29.49-.14.17-.3.38-.43.51-.14.14-.29.29-.12.56.16.28.73 1.2 1.56 1.94 1.08.96 1.98 1.26 2.26 1.4.28.14.44.12.6-.07.17-.2.7-.81.89-1.09.18-.28.37-.23.62-.14.26.1 1.63.77 1.91.91.28.14.47.21.54.32.07.12.07.68-.17 1.36Z"
+                />
+              </svg>
+            </span>
           </a>
           <a
             class="contact-tile"
             href="tel:+201121111605"
             aria-label="Call Marieliez Pharmacy at +20 112 111 1605"
+            data-i18n-aria="visit.callAria"
           >
-            <span class="tile-label">Call</span>
-            <span class="tile-value">+20 112 111 1605</span>
+            <span class="tile-copy">
+              <span class="tile-label" data-i18n="visit.callLabel">Call</span>
+              <span class="tile-value">+20 112 111 1605</span>
+            </span>
+            <span class="tile-icon tile-icon-call" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6.7 3.8c.5-.5 1.3-.6 1.9-.2l2.1 1.3c.6.4.8 1.1.6 1.8l-.6 1.9c-.1.4 0 .8.3 1.1l2.7 2.7c.3.3.7.4 1.1.3l1.9-.6c.7-.2 1.4 0 1.8.6l1.3 2.1c.4.6.3 1.4-.2 1.9l-1.1 1.1c-.6.6-1.4.9-2.2.8-2.1-.2-5.1-1.5-7.9-4.3S4.5 10.3 4.3 8.2c-.1-.8.2-1.6.8-2.2l1.6-1.6Z" />
+              </svg>
+            </span>
           </a>
           <a
             class="contact-tile"
@@ -632,35 +879,49 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Marieliez Pharmacy on Facebook"
+            data-i18n-aria="visit.fbAria"
           >
-            <span class="tile-label">Facebook</span>
-            <span class="tile-value">@MarieliezPharmacyeg</span>
+            <span class="tile-copy">
+              <span class="tile-label" data-i18n="visit.fbLabel">Facebook</span>
+              <span class="tile-value">@MarieliezPharmacyeg</span>
+            </span>
+            <span class="tile-icon tile-icon-facebook" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                <path
+                  d="M14 8.2V6.6c0-.6.1-1 .3-1.2.2-.3.6-.4 1.2-.4H17V2h-2.5C11.9 2 10.5 3.5 10.5 6.3v1.9H8V12h2.5v10h3.5V12H17l.5-3.8H14Z"
+                />
+              </svg>
+            </span>
           </a>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <img src="/logo-trimmed.png" alt="Marieliez Pharmacy" width="48" height="62" />
-      <p>&copy; <span id="year"></span> Marieliez Pharmacy</p>
-      <p class="footer-meta">
-        Al Golf, Nasr City
-        <span class="footer-sep" aria-hidden="true">·</span>
-        Highland Park, New Cairo
+      <img
+        src="/logo-trimmed.png"
+        data-i18n-alt="hero.logoAlt"
+        alt="Marieliez Pharmacy"
+        width="48"
+        height="62"
+      />
+      <p>&copy; <span id="year"></span> <span data-i18n="brand.wordmark">Marieliez Pharmacy</span></p>
+      <p class="footer-meta" data-i18n="footer.locations">
+        Al Golf, Nasr City · Highland Park, New Cairo
       </p>
       <p class="footer-meta">
         <a class="inline-link" href="tel:+201121111605">+20 112 111 1605</a>
         <span class="footer-sep" aria-hidden="true">·</span>
-        Tax ID 239-850-394
+        <span data-i18n="footer.tax">Tax ID 239-850-394</span>
         <span class="footer-sep" aria-hidden="true">·</span>
         <span class="brand-tag">#treatslikefamily</span>
       </p>
-      <p class="footer-meta">
+      <p class="footer-meta" data-i18n="footer.powered">
         powered by love by Cloudastick Systems Salesforce Partner
       </p>
     </footer>
 
-    <nav class="dock" aria-label="Quick navigation">
+    <nav class="dock" data-i18n-aria="nav.dockAria" aria-label="Quick navigation">
       <a class="dock-item is-active" href="#top" data-nav="top">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
           <path
@@ -670,7 +931,7 @@
             stroke-linejoin="round"
           />
         </svg>
-        <span>Home</span>
+        <span data-i18n="nav.home">Home</span>
       </a>
       <a class="dock-item" href="#shop" data-nav="shop">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -687,7 +948,7 @@
             stroke-linecap="round"
           />
         </svg>
-        <span>Shop</span>
+        <span data-i18n="nav.shop">Shop</span>
       </a>
       <a class="dock-item" href="#map" data-nav="map">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -698,7 +959,7 @@
           />
           <circle cx="12" cy="10.8" r="2.2" stroke="currentColor" stroke-width="1.5" />
         </svg>
-        <span>Map</span>
+        <span data-i18n="nav.map">Map</span>
       </a>
       <a class="dock-item" href="#visit" data-nav="visit">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -709,11 +970,56 @@
             stroke-linejoin="round"
           />
         </svg>
-        <span>Visit</span>
+        <span data-i18n="nav.visit">Visit</span>
       </a>
     </nav>
 
-    <button type="button" class="cart-fab" id="cart-fab" hidden aria-label="Open cart">
+    <aside class="symptom-bot" id="symptom-bot" hidden>
+      <div class="bot-backdrop" data-bot-close tabindex="-1" aria-hidden="true"></div>
+      <div
+        class="bot-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bot-title"
+      >
+        <header class="bot-header">
+          <div>
+            <h2 id="bot-title" data-i18n="bot.title">Symptom guide</h2>
+            <p class="bot-disclaimer" data-i18n="bot.disclaimer">
+              Informational only, not medical advice. Always consult a Marieliez
+              pharmacist, especially for prescriptions or if symptoms are severe.
+            </p>
+          </div>
+          <div class="bot-header-actions">
+            <button type="button" class="text-btn" data-bot-reset data-i18n="bot.reset">
+              Start over
+            </button>
+            <button type="button" class="text-btn" data-bot-close data-i18n="bot.close">
+              Close
+            </button>
+          </div>
+        </header>
+        <div class="bot-chips" data-bot-chips role="toolbar" aria-label="Common symptoms"></div>
+        <div class="bot-thread" data-bot-thread aria-live="polite"></div>
+        <form class="bot-form" data-bot-form>
+          <label class="visually-hidden" for="bot-input" data-i18n="shop.feelCta">
+            How do you feel?
+          </label>
+          <input
+            id="bot-input"
+            type="text"
+            data-bot-input
+            data-i18n-placeholder="bot.placeholder"
+            placeholder="e.g. headache, sore throat, حموضة…"
+            autocomplete="off"
+            enterkeyhint="send"
+          />
+          <button type="submit" class="btn btn-filled btn-sm" data-i18n="bot.send">Send</button>
+        </form>
+      </div>
+    </aside>
+
+    <button type="button" class="cart-fab" id="cart-fab" hidden data-i18n-aria="cart.openAria" aria-label="Open cart">
       <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
         <path
           d="M6.5 7.5h11l-.9 10.2a1.8 1.8 0 0 1-1.8 1.6H9.2a1.8 1.8 0 0 1-1.8-1.6L6.5 7.5Z"
@@ -740,18 +1046,20 @@
         aria-labelledby="cart-title"
       >
         <header class="cart-header">
-          <h2 id="cart-title">Your cart</h2>
-          <button type="button" class="text-btn" data-cart-close>Close</button>
+          <h2 id="cart-title" data-i18n="cart.title">Your cart</h2>
+          <button type="button" class="text-btn" data-cart-close data-i18n="cart.close">Close</button>
         </header>
         <div class="cart-body" data-cart-body></div>
         <footer class="cart-footer">
           <div class="cart-total-row">
-            <span>Approx. total</span>
+            <span data-i18n="cart.total">Approx. total</span>
             <strong data-cart-total>~ EGP 0</strong>
           </div>
-          <p class="price-disclaimer" role="note">Prices are liable to change</p>
+          <p class="price-disclaimer" role="note" data-i18n="shop.priceDisclaimer">
+            Prices are liable to change
+          </p>
           <button type="button" class="btn btn-filled" data-cart-checkout disabled>
-            <span>Order on WhatsApp</span>
+            <span data-i18n="cart.checkout">Order on WhatsApp</span>
           </button>
         </footer>
       </div>
@@ -761,13 +1069,17 @@
       <div class="toast-body">
         <img src="/pwa-192.png" alt="" width="36" height="36" />
         <div>
-          <strong>Install Marieliez</strong>
-          <p>Add to your Home Screen for quick access.</p>
+          <strong data-i18n="install.title">Install Marieliez</strong>
+          <p data-i18n="install.body">Add to your Home Screen for quick access.</p>
         </div>
       </div>
       <div class="toast-actions">
-        <button type="button" class="text-btn" id="install-dismiss">Not now</button>
-        <button type="button" class="btn btn-filled btn-sm" id="install-accept">Install</button>
+        <button type="button" class="text-btn" id="install-dismiss" data-i18n="install.dismiss">
+          Not now
+        </button>
+        <button type="button" class="btn btn-filled btn-sm" id="install-accept" data-i18n="install.accept">
+          Install
+        </button>
       </div>
     </div>
 

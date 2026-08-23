@@ -1,5 +1,12 @@
+import { initI18n } from './i18n.js'
+import { initTheme } from './theme.js'
 import { initShop } from './shop.js'
 import { initFeedback } from './feedback.js'
+import { initWelcome } from './welcome.js'
+
+initTheme()
+initI18n()
+initWelcome()
 
 const yearEl = document.getElementById('year')
 if (yearEl) yearEl.textContent = String(new Date().getFullYear())

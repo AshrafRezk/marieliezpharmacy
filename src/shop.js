@@ -3,6 +3,9 @@ import {
   buildWhatsAppUrl,
   formatPrice,
 } from './config.js'
+import { categoryLabel, getLang, onLangChange, t } from './i18n.js'
+import { searchProducts } from './search.js'
+import { initSymptomBot } from './symptom-bot.js'
 
 const CART_KEY = 'marieliez-cart-v1'
 const PAGE_SIZE = 24
@@ -24,6 +27,9 @@ const state = {
   cart: loadCart(),
   catalogReady: false,
 }
+
+/** @type {ReturnType<typeof initSymptomBot> | null} */
+let symptomBot = null
 
 function loadCart() {
   try {
@@ -59,16 +65,7 @@ function cartTotal() {
 }
 
 function filteredProducts() {
-  const q = state.query.trim().toLowerCase()
-  return state.products.filter((p) => {
-    if (state.category !== 'all' && p.categorySlug !== state.category) return false
-    if (!q) return true
-    return (
-      p.title.toLowerCase().includes(q) ||
-      (p.subcategory && p.subcategory.toLowerCase().includes(q)) ||
-      p.category.toLowerCase().includes(q)
-    )
-  })
+  return searchProducts(state.products, state.query, { category: state.category })
 }
 
 function setCartQty(productId, qty) {
@@ -86,22 +83,35 @@ function buildOrderMessage() {
       `• ${qty}× ${product.title}: ${formatPrice(product.price * qty)}`,
   )
   return [
-    'Hello Marieliez Pharmacy, I would like to order:',
+    t('cart.orderHello'),
     '',
     ...rows,
     '',
-    `Approx. total: ${formatPrice(cartTotal())}`,
+    `${t('cart.orderTotal')} ${formatPrice(cartTotal())}`,
     '',
-    PRICE_DISCLAIMER,
+    t('shop.priceDisclaimer') || PRICE_DISCLAIMER,
   ].join('\n')
+}
+
+function productCountLabel(n) {
+  const formatted = n.toLocaleString(getLang() === 'ar' ? 'ar-EG' : 'en-EG')
+  if (getLang() === 'ar') {
+    if (n === 1) return t('shop.products_one', { n: formatted })
+    return t('shop.products_other', { n: formatted })
+  }
+  if (n === 1) return t('shop.products_one', { n: formatted })
+  return t('shop.products_other', { n: formatted })
 }
 
 function renderCategories(root) {
   const chips = root.querySelector('[data-shop-categories]')
   if (!chips) return
   const items = [
-    { slug: 'all', name: 'All' },
-    ...state.categories.map((c) => ({ slug: c.slug, name: c.name })),
+    { slug: 'all', name: t('shop.all') },
+    ...state.categories.map((c) => ({
+      slug: c.slug,
+      name: categoryLabel(c.slug, c.name),
+    })),
   ]
   chips.innerHTML = items
     .map(
@@ -113,6 +123,7 @@ function renderCategories(root) {
       >${escapeHtml(c.name)}</button>`,
     )
     .join('')
+  chips.setAttribute('aria-label', t('shop.categoriesAria'))
 }
 
 function productCard(product) {
@@ -131,12 +142,12 @@ function productCard(product) {
         <div class="shop-card-actions">
           ${
             qty > 0
-              ? `<div class="shop-qty" role="group" aria-label="Quantity for ${escapeHtml(product.title)}">
-                  <button type="button" class="shop-qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
+              ? `<div class="shop-qty" role="group" aria-label="${escapeHtml(t('shop.qtyAria', { title: product.title }))}">
+                  <button type="button" class="shop-qty-btn" data-action="dec" aria-label="${escapeHtml(t('shop.dec'))}">−</button>
                   <span class="shop-qty-value" aria-live="polite">${qty}</span>
-                  <button type="button" class="shop-qty-btn" data-action="inc" aria-label="Increase quantity">+</button>
+                  <button type="button" class="shop-qty-btn" data-action="inc" aria-label="${escapeHtml(t('shop.inc'))}">+</button>
                 </div>`
-              : `<button type="button" class="btn btn-tonal btn-sm shop-add" data-action="add">Add</button>`
+              : `<button type="button" class="btn btn-tonal btn-sm shop-add" data-action="add">${escapeHtml(t('shop.add'))}</button>`
           }
         </div>
       </div>
@@ -153,23 +164,23 @@ function renderGrid(root) {
   const slice = all.slice(0, state.visible)
 
   if (!state.catalogReady) {
-    grid.innerHTML = `<p class="shop-status">Loading products…</p>`
+    grid.innerHTML = `<p class="shop-status">${escapeHtml(t('shop.loading'))}</p>`
     if (meta) meta.textContent = ''
     if (more) more.hidden = true
     return
   }
 
   if (!slice.length) {
-    grid.innerHTML = `<p class="shop-status">No products match your search.</p>`
+    grid.innerHTML = `<p class="shop-status">${escapeHtml(t('shop.empty'))}</p>`
   } else {
     grid.innerHTML = slice.map(productCard).join('')
   }
 
-  if (meta) {
-    meta.textContent = `${all.length.toLocaleString('en-EG')} product${all.length === 1 ? '' : 's'}`
-  }
+  if (meta) meta.textContent = productCountLabel(all.length)
   if (more) {
     more.hidden = slice.length >= all.length
+    const label = more.querySelector('span')
+    if (label) label.textContent = t('shop.more')
   }
 }
 
@@ -180,7 +191,10 @@ function renderCartChrome() {
     el.hidden = count === 0
   })
   const fab = document.getElementById('cart-fab')
-  if (fab) fab.hidden = count === 0
+  if (fab) {
+    fab.hidden = count === 0
+    fab.setAttribute('aria-label', t('cart.openAria'))
+  }
 }
 
 function renderCartDrawer() {
@@ -191,7 +205,7 @@ function renderCartDrawer() {
 
   const lines = cartLines()
   if (!lines.length) {
-    body.innerHTML = `<p class="shop-status">Your cart is empty. Browse products to add items.</p>`
+    body.innerHTML = `<p class="shop-status">${escapeHtml(t('cart.empty'))}</p>`
   } else {
     body.innerHTML = lines
       .map(({ product, qty }) => {
@@ -200,13 +214,13 @@ function renderCartDrawer() {
           <div class="cart-line" data-product-id="${escapeHtml(product.id)}">
             <div class="cart-line-info">
               <strong>${escapeHtml(product.title)}</strong>
-              <span>${escapeHtml(formatPrice(product.price))} each</span>
+              <span>${escapeHtml(formatPrice(product.price))} ${escapeHtml(t('cart.each'))}</span>
             </div>
             <div class="cart-line-side">
-              <div class="shop-qty" role="group" aria-label="Quantity">
-                <button type="button" class="shop-qty-btn" data-action="dec" aria-label="Decrease">−</button>
+              <div class="shop-qty" role="group" aria-label="${escapeHtml(t('cart.qty'))}">
+                <button type="button" class="shop-qty-btn" data-action="dec" aria-label="${escapeHtml(t('shop.dec'))}">−</button>
                 <span class="shop-qty-value">${qty}</span>
-                <button type="button" class="shop-qty-btn" data-action="inc" aria-label="Increase">+</button>
+                <button type="button" class="shop-qty-btn" data-action="inc" aria-label="${escapeHtml(t('shop.inc'))}">+</button>
               </div>
               <span class="cart-line-price">${escapeHtml(formatPrice(line))}</span>
             </div>
@@ -219,6 +233,8 @@ function renderCartDrawer() {
   if (checkout) {
     checkout.disabled = lines.length === 0
     checkout.setAttribute('aria-disabled', lines.length === 0 ? 'true' : 'false')
+    const label = checkout.querySelector('span')
+    if (label) label.textContent = t('cart.checkout')
   }
 }
 
@@ -239,6 +255,19 @@ function closeCart() {
   window.setTimeout(() => {
     if (!drawer.classList.contains('is-open')) drawer.hidden = true
   }, 280)
+}
+
+function applyShopQuery(query, categorySlug = 'all') {
+  const root = document.getElementById('shop')
+  if (!root) return
+  state.query = query || ''
+  state.category = categorySlug || 'all'
+  state.visible = PAGE_SIZE
+  const search = root.querySelector('[data-shop-search]')
+  if (search) search.value = state.query
+  renderCategories(root)
+  renderGrid(root)
+  root.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 function wireShop(root) {
@@ -278,6 +307,10 @@ function wireShop(root) {
     if (action === 'dec') setCartQty(id, current - 1)
     renderGrid(root)
   })
+
+  root.querySelector('[data-symptom-open]')?.addEventListener('click', () => {
+    symptomBot?.open()
+  })
 }
 
 function wireCart() {
@@ -309,18 +342,40 @@ function wireCart() {
   })
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeCart()
+    if (event.key === 'Escape' && !symptomBot?.isOpen?.()) closeCart()
   })
+}
+
+function refreshShopUi() {
+  const root = document.getElementById('shop')
+  if (!root) return
+  renderCategories(root)
+  renderGrid(root)
+  renderCartChrome()
+  renderCartDrawer()
+  symptomBot?.refresh()
 }
 
 export async function initShop() {
   const root = document.getElementById('shop')
   if (!root) return
 
+  symptomBot = initSymptomBot({
+    getProducts: () => state.products,
+    formatPrice,
+    onAddToCart: (id) => {
+      setCartQty(id, (state.cart[id] || 0) + 1)
+      renderGrid(root)
+    },
+    onShowInShop: applyShopQuery,
+    getCartQty: (id) => state.cart[id] || 0,
+  })
+
   wireShop(root)
   wireCart()
   renderCartChrome()
   renderGrid(root)
+  onLangChange(refreshShopUi)
 
   try {
     const res = await fetch('/data/products.json')
@@ -336,7 +391,7 @@ export async function initShop() {
     console.error(err)
     const grid = root.querySelector('[data-shop-grid]')
     if (grid) {
-      grid.innerHTML = `<p class="shop-status">Couldn’t load products. Please refresh and try again.</p>`
+      grid.innerHTML = `<p class="shop-status">${escapeHtml(t('shop.error'))}</p>`
     }
   }
 }
