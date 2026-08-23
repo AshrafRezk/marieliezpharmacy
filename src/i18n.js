@@ -160,6 +160,10 @@ export const STRINGS = {
     en: 'I would like to get:',
     ar: 'عايز آخد:',
   },
+  'cart.orderAdvice': {
+    en: 'I would like pharmacist advice / products for the symptoms above.',
+    ar: 'عايز استشارة صيدلي / منتجات للأعراض اللي فوق.',
+  },
   'cart.orderTotal': { en: 'Approx. total:', ar: 'الإجمالي التقريبي:' },
   'cart.orderAddressIntro': {
     en: 'My delivery details:',
@@ -176,6 +180,14 @@ export const STRINGS = {
     ar: 'شارك موقعك والعنوان عشان نأكد التوصيل على واتساب.',
   },
   'cart.orderSummary': { en: 'Order summary', ar: 'ملخص الطلب' },
+  'cart.botIntentTitle': {
+    en: 'From your chat with Dr. Magdy',
+    ar: 'من محادثتك مع د. مجدي',
+  },
+  'cart.emptyFromBot': {
+    en: 'No cart items yet — you can still send your symptoms and delivery details on WhatsApp.',
+    ar: 'مفيش منتجات في السلة لسه — تقدر تبعت الأعراض وبيانات التوصيل على واتساب.',
+  },
   'cart.locate': { en: 'Use my location', ar: 'استخدم موقعي' },
   'cart.locatePending': {
     en: 'Getting your location…',
@@ -253,10 +265,15 @@ export const STRINGS = {
   },
   'bot.add': { en: 'Add', ar: 'ضيف' },
   'bot.viewAll': { en: 'Show in shop', ar: 'ورّيني في المتجر' },
+  'bot.whatsapp': { en: 'Continue on WhatsApp', ar: 'كمّل على واتساب' },
+  'bot.whatsappHint': {
+    en: 'Share delivery details, then send your order on WhatsApp.',
+    ar: 'شارك بيانات التوصيل، وبعدين ابعت طلبك على واتساب.',
+  },
   'bot.reset': { en: 'Start over', ar: 'من الأول' },
   'bot.followUp': {
-    en: 'You can add items to your cart, then order on WhatsApp.',
-    ar: 'تقدر تضيف المنتجات للسلة وبعدين تطلب على واتساب.',
+    en: 'Add items to your cart, or continue on WhatsApp with delivery details.',
+    ar: 'ضيف منتجات للسلة، أو كمّل على واتساب مع بيانات التوصيل.',
   },
 
   'emergency.badge': { en: 'Emergency', ar: 'طوارئ' },

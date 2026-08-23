@@ -1001,7 +1001,7 @@
             <button type="button" class="bot-reset-btn" data-bot-reset data-i18n="bot.reset">
               Start over
             </button>
-            <button type="button" class="text-btn" data-bot-close data-i18n="bot.close">
+            <button type="button" class="bot-close-btn text-btn" data-bot-close data-i18n="bot.close">
               Close
             </button>
           </div>
@@ -1012,6 +1012,14 @@
         </p>
         <div class="bot-chips" data-bot-chips role="toolbar" data-i18n-aria="bot.chipsAria" aria-label="Common symptoms"></div>
         <div class="bot-thread" data-bot-thread aria-live="polite"></div>
+        <div class="bot-wa-bar" data-bot-wa-bar hidden aria-hidden="true">
+          <p class="bot-wa-hint" data-i18n="bot.whatsappHint">
+            Share delivery details, then send your order on WhatsApp.
+          </p>
+          <button type="button" class="btn btn-filled bot-wa-btn" data-bot-whatsapp>
+            <span data-i18n="bot.whatsapp">Continue on WhatsApp</span>
+          </button>
+        </div>
         <form class="bot-form" data-bot-form>
           <label class="visually-hidden" for="bot-input" data-i18n="shop.feelCta">
             How do you feel?

@@ -28,6 +28,8 @@ const state = {
   cart: loadCart(),
   catalogReady: false,
   checkoutStep: 'cart',
+  /** When true, delivery/WhatsApp is allowed even with an empty cart (symptom-bot flow). */
+  checkoutFromBot: false,
   delivery: {
     lat: null,
     lng: null,
@@ -124,11 +126,16 @@ function buildOrderMessage() {
     parts.push('')
   }
 
-  parts.push(t('cart.orderWant'))
-  parts.push(...rows)
-  parts.push('')
-  parts.push(`${t('cart.orderTotal')} ${formatPrice(cartTotal())}`)
-  parts.push('')
+  if (rows.length) {
+    parts.push(t('cart.orderWant'))
+    parts.push(...rows)
+    parts.push('')
+    parts.push(`${t('cart.orderTotal')} ${formatPrice(cartTotal())}`)
+    parts.push('')
+  } else if (feelings.length || userTurns.length) {
+    parts.push(t('cart.orderAdvice'))
+    parts.push('')
+  }
 
   const { building, street, area, notes, lat, lng } = state.delivery
   const hasAddress = building || street || area || notes || (lat != null && lng != null)
@@ -145,6 +152,13 @@ function buildOrderMessage() {
 
   parts.push(t('shop.priceDisclaimer') || PRICE_DISCLAIMER)
   return parts.join('\n')
+}
+
+function canSendWhatsApp() {
+  if (cartCount() > 0) return true
+  if (!state.checkoutFromBot) return false
+  const intent = symptomBot?.getCustomerIntent?.() || { feelings: [], turns: [] }
+  return (intent.feelings?.length || 0) > 0 || (intent.turns || []).some((turn) => turn.role === 'user')
 }
 
 function productCountLabel(n) {
@@ -264,6 +278,12 @@ function setCheckoutStep(step) {
   if (title) {
     title.textContent = step === 'delivery' ? t('cart.deliveryTitle') : t('cart.title')
   }
+  const waBtn = document.querySelector('[data-cart-whatsapp]')
+  if (waBtn) {
+    const ok = step === 'delivery' ? canSendWhatsApp() : cartCount() > 0
+    waBtn.disabled = !ok
+    waBtn.setAttribute('aria-disabled', ok ? 'false' : 'true')
+  }
 }
 
 function renderCartDrawer() {
@@ -274,8 +294,24 @@ function renderCartDrawer() {
 
   const lines = cartLines()
   if (!lines.length) {
-    body.innerHTML = `<p class="shop-status">${escapeHtml(t('cart.empty'))}</p>`
-    if (state.checkoutStep !== 'cart') setCheckoutStep('cart')
+    if (state.checkoutStep === 'delivery' && state.checkoutFromBot) {
+      const intent = symptomBot?.getCustomerIntent?.() || { feelings: [], turns: [] }
+      const feelings = intent.feelings || []
+      const feelList = feelings.length
+        ? `<ul class="cart-intent-list">${feelings
+            .map((f) => `<li>${escapeHtml(f)}</li>`)
+            .join('')}</ul>`
+        : ''
+      body.innerHTML = `
+        <div class="cart-delivery-summary cart-delivery-summary--intent">
+          <p class="cart-delivery-summary-label">${escapeHtml(t('cart.botIntentTitle'))}</p>
+          ${feelList}
+          <p class="shop-status">${escapeHtml(t('cart.emptyFromBot'))}</p>
+        </div>`
+    } else {
+      body.innerHTML = `<p class="shop-status">${escapeHtml(t('cart.empty'))}</p>`
+      if (state.checkoutStep !== 'cart') setCheckoutStep('cart')
+    }
   } else if (state.checkoutStep === 'cart') {
     body.innerHTML = lines
       .map(({ product, qty }) => {
@@ -323,11 +359,13 @@ function renderCartDrawer() {
     const label = checkout.querySelector('span')
     if (label) label.textContent = t('cart.checkout')
   }
+  if (state.checkoutStep === 'delivery') setCheckoutStep('delivery')
 }
 
 function openCart() {
   const drawer = document.getElementById('cart-drawer')
   if (!drawer) return
+  state.checkoutFromBot = false
   setCheckoutStep('cart')
   drawer.hidden = false
   requestAnimationFrame(() => drawer.classList.add('is-open'))
@@ -340,10 +378,27 @@ function closeCart() {
   if (!drawer) return
   drawer.classList.remove('is-open')
   document.body.classList.remove('cart-open')
+  state.checkoutFromBot = false
   setCheckoutStep('cart')
   window.setTimeout(() => {
     if (!drawer.classList.contains('is-open')) drawer.hidden = true
   }, 280)
+}
+
+/** Close symptom bot and open the shared delivery → WhatsApp checkout. */
+function openDeliveryFromBot() {
+  const drawer = document.getElementById('cart-drawer')
+  if (!drawer) return
+  state.checkoutFromBot = true
+  setCheckoutStep('delivery')
+  renderCartDrawer()
+  drawer.hidden = false
+  document.body.classList.add('cart-open')
+  requestAnimationFrame(() => drawer.classList.add('is-open'))
+  symptomBot?.close()
+  window.setTimeout(() => {
+    document.querySelector('[data-cart-building]')?.focus()
+  }, 320)
 }
 
 function applyShopQuery(query, categorySlug = 'all') {
@@ -526,7 +581,7 @@ function wireCart() {
   document.querySelector('[data-cart-locate]')?.addEventListener('click', requestLocation)
 
   document.querySelector('[data-cart-whatsapp]')?.addEventListener('click', () => {
-    if (!cartCount()) return
+    if (!canSendWhatsApp()) return
     const url = buildWhatsAppUrl(buildOrderMessage())
     window.open(url, '_blank', 'noopener,noreferrer')
   })
@@ -578,6 +633,7 @@ export async function initShop() {
     },
     onShowInShop: applyShopQuery,
     getCartQty: (id) => state.cart[id] || 0,
+    onContinueWhatsApp: openDeliveryFromBot,
   })
 
   wireShop(root)

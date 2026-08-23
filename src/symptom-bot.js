@@ -62,16 +62,26 @@ export function matchSymptomRules(text) {
  *   onAddToCart: (productId: string) => void
  *   onShowInShop: (query: string, categorySlug?: string) => void
  *   getCartQty: (productId: string) => number
+ *   onContinueWhatsApp?: () => void
  * }} api
  */
 export function initSymptomBot(api) {
   const panel = document.getElementById('symptom-bot')
-  if (!panel) return { open() {}, close() {}, refresh() {}, getCustomerIntent: () => ({ feelings: [], turns: [] }) }
+  if (!panel) {
+    return {
+      open() {},
+      close() {},
+      refresh() {},
+      isOpen: () => false,
+      getCustomerIntent: () => ({ feelings: [], turns: [] }),
+    }
+  }
 
   const thread = panel.querySelector('[data-bot-thread]')
   const form = panel.querySelector('[data-bot-form]')
   const input = panel.querySelector('[data-bot-input]')
   const chipsEl = panel.querySelector('[data-bot-chips]')
+  const waBar = panel.querySelector('[data-bot-wa-bar]')
 
   const state = {
     open: false,
@@ -79,6 +89,17 @@ export function initSymptomBot(api) {
     turns: [],
     /** @type {string[]} */
     feelings: [],
+  }
+
+  function updateWhatsAppChrome() {
+    if (!waBar) return
+    const ready = state.feelings.length > 0
+    waBar.hidden = !ready
+    waBar.setAttribute('aria-hidden', ready ? 'false' : 'true')
+  }
+
+  function continueOnWhatsApp() {
+    api.onContinueWhatsApp?.()
   }
 
   function recordTurn(role, text) {
@@ -92,6 +113,7 @@ export function initSymptomBot(api) {
       if (key && !state.feelings.some((f) => normalizeTrigger(f) === key)) {
         state.feelings.push(cleaned)
       }
+      updateWhatsAppChrome()
     }
   }
 
@@ -142,13 +164,30 @@ export function initSymptomBot(api) {
     thread.innerHTML = ''
     state.turns = []
     state.feelings = []
+    updateWhatsAppChrome()
     appendBubble('assist', `<p>${escapeHtml(t('bot.welcome'))}</p>`, t('bot.welcome'))
     renderChips()
   }
 
+  function whatsappActionsHtml() {
+    return `
+      <div class="bot-actions-row">
+        <button type="button" class="btn btn-filled btn-sm bot-wa-inline" data-bot-whatsapp>
+          ${escapeHtml(t('bot.whatsapp'))}
+        </button>
+      </div>
+      <p class="bot-follow">${escapeHtml(t('bot.followUp'))}</p>`
+  }
+
   function productListHtml(products, queryForShop, categorySlug) {
     if (!products.length) {
-      return `<p>${escapeHtml(t('bot.none'))}</p>`
+      return `
+        <p>${escapeHtml(t('bot.none'))}</p>
+        <div class="bot-actions-row">
+          <button type="button" class="btn btn-filled btn-sm bot-wa-inline" data-bot-whatsapp>
+            ${escapeHtml(t('bot.whatsapp'))}
+          </button>
+        </div>`
     }
 
     const cards = products
@@ -181,8 +220,12 @@ export function initSymptomBot(api) {
         data-category="${escapeHtml(categorySlug || 'all')}">
         ${escapeHtml(t('bot.viewAll'))}
       </button>`
+    const waBtn = `
+      <button type="button" class="btn btn-filled btn-sm bot-wa-inline" data-bot-whatsapp>
+        ${escapeHtml(t('bot.whatsapp'))}
+      </button>`
 
-    return `${cards}<div class="bot-actions-row">${viewBtn}</div><p class="bot-follow">${escapeHtml(t('bot.followUp'))}</p>`
+    return `${cards}<div class="bot-actions-row">${waBtn}${viewBtn}</div><p class="bot-follow">${escapeHtml(t('bot.followUp'))}</p>`
   }
 
   function showRecommendations(rule, keywords, categorySlugs, userText) {
@@ -240,7 +283,11 @@ export function initSymptomBot(api) {
           foundText,
         )
       } else {
-        appendBubble('assist', `<p>${escapeHtml(t('bot.none'))}</p>`, t('bot.none'))
+        appendBubble(
+          'assist',
+          `<p>${escapeHtml(t('bot.none'))}</p>${whatsappActionsHtml()}`,
+          t('bot.none'),
+        )
       }
       return
     }
@@ -330,6 +377,12 @@ export function initSymptomBot(api) {
       return
     }
 
+    const waBtn = event.target.closest('[data-bot-whatsapp]')
+    if (waBtn) {
+      continueOnWhatsApp()
+      return
+    }
+
     const addBtn = event.target.closest('[data-bot-add]')
     if (addBtn) {
       api.onAddToCart(addBtn.dataset.botAdd)
@@ -354,6 +407,7 @@ export function initSymptomBot(api) {
     close,
     refresh() {
       renderChips()
+      updateWhatsAppChrome()
       // Re-apply static strings inside panel
       panel.querySelectorAll('[data-i18n]').forEach((el) => {
         const key = el.getAttribute('data-i18n')
