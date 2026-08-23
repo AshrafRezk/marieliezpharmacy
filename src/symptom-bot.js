@@ -85,8 +85,25 @@ export function initSymptomBot(api) {
   function appendBubble(role, html) {
     if (!thread) return
     const div = document.createElement('div')
-    div.className = `bot-bubble bot-bubble-${role}`
-    div.innerHTML = html
+    if (role === 'assist') {
+      div.className = 'bot-msg bot-msg-assist'
+      div.innerHTML = `
+        <img
+          class="bot-avatar"
+          src="/images/dr-magdy.jpg"
+          alt=""
+          width="36"
+          height="36"
+          decoding="async"
+        />
+        <div class="bot-msg-body">
+          <span class="bot-msg-name">${escapeHtml(t('bot.doctorName'))}</span>
+          <div class="bot-bubble bot-bubble-assist">${html}</div>
+        </div>`
+    } else {
+      div.className = `bot-bubble bot-bubble-${role}`
+      div.innerHTML = html
+    }
     thread.appendChild(div)
     scrollThread()
     return div

@@ -150,12 +150,14 @@ export const STRINGS = {
   },
   'cart.orderTotal': { en: 'Approx. total:', ar: 'الإجمالي التقريبي:' },
 
-  'bot.title': { en: 'Symptom guide', ar: 'دليل الأعراض' },
+  'bot.title': { en: 'Dr. Magdy', ar: 'د. مجدي' },
+  'bot.subtitle': { en: 'Symptom guide', ar: 'دليل الأعراض' },
+  'bot.doctorName': { en: 'Dr. Magdy', ar: 'د. مجدي' },
   'bot.close': { en: 'Close', ar: 'إغلاق' },
   'bot.chipsAria': { en: 'Common symptoms', ar: 'أعراض شائعة' },
   'bot.welcome': {
-    en: 'Tell us how you feel, or pick a common symptom. We’ll suggest products from our shelf.',
-    ar: 'قولنا حاسس بإيه، أو اختار عَرَض شائع. هنقترحلك منتجات من الرف.',
+    en: 'Hi — I’m Dr. Magdy. Tell me how you feel, or pick a common symptom. I’ll suggest products from our shelf.',
+    ar: 'أهلاً — أنا د. مجدي. قول لي حاسس بإيه، أو اختار عَرَض شائع. هقترحلك منتجات من الرف.',
   },
   'bot.placeholder': {
     en: 'e.g. headache, sore throat, حموضة…',

@@ -15,6 +15,7 @@ export default defineConfig({
         'logo.png',
         'logo-trimmed.png',
         'favicon-512.png',
+        'images/dr-magdy.jpg',
       ],
       manifest: {
         name: 'Marieliez Pharmacy',
@@ -55,7 +56,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff2,json,webmanifest}'],
         navigateFallback: 'index.html',
         runtimeCaching: [
           {

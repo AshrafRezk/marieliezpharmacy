@@ -175,7 +175,8 @@ html[data-theme="light"] {
   --emergency-lane-urgent-label: #0369a1;
   --pin-label-bg: linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(238, 248, 245, 0.96));
   --pin-label-title: #0b1f1b;
-  --compound-chip-bg: linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(232, 244, 241, 0.96));
+  /* Near-black chip so cream/white compound logos stay readable on the light map */
+  --compound-chip-bg: linear-gradient(165deg, rgba(16, 24, 22, 0.98), rgba(10, 18, 16, 0.98));
   --hospital-chip-bg: linear-gradient(165deg, rgba(224, 242, 254, 0.98), rgba(186, 230, 253, 0.95));
   --hospital-initials: #0c4a6e;
   --feedback-canvas-blend: multiply;
@@ -2363,13 +2364,48 @@ body.bot-open {
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
+.bot-header-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.bot-header-avatar,
+.bot-avatar {
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 18%;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 2px 8px color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+
+.bot-header-avatar {
+  width: 3rem;
+  height: 3rem;
+}
+
+.bot-header-copy {
+  min-width: 0;
+}
+
 .bot-header h2 {
-  margin: 0 0 var(--space-2);
+  margin: 0;
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--md-sys-color-on-surface);
+}
+
+.bot-subtitle {
+  margin: 0.15rem 0 0.45rem;
+  color: var(--accent-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .bot-disclaimer {
@@ -2378,6 +2414,42 @@ body.bot-open {
   color: var(--md-sys-color-on-surface-variant);
   font-size: 0.78rem;
   line-height: 1.45;
+}
+
+.bot-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  max-width: min(100%, 28rem);
+  align-self: flex-start;
+  animation: bot-in 0.28s var(--ease-out) both;
+}
+
+.bot-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-top: 1.15rem;
+}
+
+.bot-msg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.bot-msg-name {
+  padding-inline-start: 0.15rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.bot-msg .bot-bubble {
+  max-width: none;
+  animation: none;
 }
 
 .bot-header-actions {
@@ -2894,12 +2966,12 @@ html[data-theme="light"] .brand-logos img {
   opacity: 1;
 }
 
-html[data-theme="light"] .map-marker-compound-inner,
-html[data-theme="light"] .map-marker-hospital-inner {
+/* Dark compound chips: stronger lift + soft edge so they read on the pale map */
+html[data-theme="light"] .map-marker-compound-inner {
   box-shadow:
-    0 6px 16px rgba(11, 31, 27, 0.12),
-    inset 0 0 0 1px var(--glass-edge),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    0 8px 18px rgba(11, 31, 27, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 html[data-theme="light"] .map-marker-hospital-inner {
