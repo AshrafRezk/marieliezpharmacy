@@ -6,7 +6,7 @@
 
 const MUTE_KEY = 'marieliez-sound-muted'
 const INTERACTIVE =
-  'a, button, [role="button"], .dock-item, .branch-item, .shop-chip, .chip-cta, .cart-fab, .leaflet-marker-icon, .leaflet-interactive, summary, input[type="button"], input[type="submit"], input[type="reset"]'
+  'a, button, [role="button"], .dock-item, .branch-item, .shop-chip, .chip-cta, .cart-fab, .bot-fab, .leaflet-marker-icon, .leaflet-interactive, summary, input[type="button"], input[type="submit"], input[type="reset"]'
 
 const MAX_RIPPLES = 6
 const MAX_PARTICLES = 28

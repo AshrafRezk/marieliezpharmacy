@@ -8,6 +8,7 @@ import { searchProducts } from './search.js'
 import { initSymptomBot } from './symptom-bot.js'
 
 const CART_KEY = 'marieliez-cart-v1'
+const BOT_NUDGE_KEY = 'marieliez-bot-nudge-session'
 const PAGE_SIZE = 24
 
 const escapeHtml = (value) =>
@@ -26,6 +27,15 @@ const state = {
   visible: PAGE_SIZE,
   cart: loadCart(),
   catalogReady: false,
+  checkoutStep: 'cart',
+  delivery: {
+    lat: null,
+    lng: null,
+    building: '',
+    street: '',
+    area: '',
+    notes: '',
+  },
 }
 
 /** @type {ReturnType<typeof initSymptomBot> | null} */
@@ -76,21 +86,65 @@ function setCartQty(productId, qty) {
   renderCartDrawer()
 }
 
+function mapsLink(lat, lng) {
+  if (lat == null || lng == null) return ''
+  return `https://www.google.com/maps?q=${lat},${lng}`
+}
+
+function readDeliveryFields() {
+  state.delivery.building = document.querySelector('[data-cart-building]')?.value?.trim() || ''
+  state.delivery.street = document.querySelector('[data-cart-street]')?.value?.trim() || ''
+  state.delivery.area = document.querySelector('[data-cart-area]')?.value?.trim() || ''
+  state.delivery.notes = document.querySelector('[data-cart-notes]')?.value?.trim() || ''
+}
+
 function buildOrderMessage() {
+  readDeliveryFields()
   const lines = cartLines()
   const rows = lines.map(
     ({ product, qty }) =>
       `• ${qty}× ${product.title}: ${formatPrice(product.price * qty)}`,
   )
-  return [
-    t('cart.orderHello'),
-    '',
-    ...rows,
-    '',
-    `${t('cart.orderTotal')} ${formatPrice(cartTotal())}`,
-    '',
-    t('shop.priceDisclaimer') || PRICE_DISCLAIMER,
-  ].join('\n')
+  const intent = symptomBot?.getCustomerIntent?.() || { feelings: [], turns: [] }
+  const feelings = intent.feelings || []
+  const parts = [t('cart.orderHello'), '']
+
+  if (feelings.length) {
+    parts.push(t('cart.orderFeel', { feel: feelings.join(getLang() === 'ar' ? '، ' : ', ') }))
+    parts.push('')
+  }
+
+  // Include short first-person conversation history when the user chatted with the bot
+  const userTurns = (intent.turns || []).filter((turn) => turn.role === 'user')
+  if (userTurns.length > 1) {
+    parts.push(t('cart.orderHistoryIntro'))
+    userTurns.forEach((turn) => {
+      parts.push(`• ${turn.text}`)
+    })
+    parts.push('')
+  }
+
+  parts.push(t('cart.orderWant'))
+  parts.push(...rows)
+  parts.push('')
+  parts.push(`${t('cart.orderTotal')} ${formatPrice(cartTotal())}`)
+  parts.push('')
+
+  const { building, street, area, notes, lat, lng } = state.delivery
+  const hasAddress = building || street || area || notes || (lat != null && lng != null)
+  if (hasAddress) {
+    parts.push(t('cart.orderAddressIntro'))
+    if (building) parts.push(`${t('cart.orderBuilding')} ${building}`)
+    if (street) parts.push(`${t('cart.orderStreet')} ${street}`)
+    if (area) parts.push(`${t('cart.orderArea')} ${area}`)
+    if (notes) parts.push(`${t('cart.orderNotes')} ${notes}`)
+    const link = mapsLink(lat, lng)
+    if (link) parts.push(`${t('cart.orderMap')} ${link}`)
+    parts.push('')
+  }
+
+  parts.push(t('shop.priceDisclaimer') || PRICE_DISCLAIMER)
+  return parts.join('\n')
 }
 
 function productCountLabel(n) {
@@ -195,6 +249,21 @@ function renderCartChrome() {
     fab.hidden = count === 0
     fab.setAttribute('aria-label', t('cart.openAria'))
   }
+  document.getElementById('float-dock')?.classList.toggle('has-cart', count > 0)
+  const botFab = document.getElementById('bot-fab')
+  if (botFab) botFab.setAttribute('aria-label', t('bot.openAria'))
+}
+
+function setCheckoutStep(step) {
+  state.checkoutStep = step
+  const cartFooter = document.querySelector('[data-cart-footer-cart]')
+  const deliveryFooter = document.querySelector('[data-cart-footer-delivery]')
+  if (cartFooter) cartFooter.hidden = step !== 'cart'
+  if (deliveryFooter) deliveryFooter.hidden = step !== 'delivery'
+  const title = document.getElementById('cart-title')
+  if (title) {
+    title.textContent = step === 'delivery' ? t('cart.deliveryTitle') : t('cart.title')
+  }
 }
 
 function renderCartDrawer() {
@@ -206,7 +275,8 @@ function renderCartDrawer() {
   const lines = cartLines()
   if (!lines.length) {
     body.innerHTML = `<p class="shop-status">${escapeHtml(t('cart.empty'))}</p>`
-  } else {
+    if (state.checkoutStep !== 'cart') setCheckoutStep('cart')
+  } else if (state.checkoutStep === 'cart') {
     body.innerHTML = lines
       .map(({ product, qty }) => {
         const line = product.price * qty
@@ -227,6 +297,23 @@ function renderCartDrawer() {
           </div>`
       })
       .join('')
+  } else {
+    body.innerHTML = `
+      <div class="cart-delivery-summary">
+        <p class="cart-delivery-summary-label">${escapeHtml(t('cart.orderSummary'))}</p>
+        <ul>
+          ${lines
+            .map(
+              ({ product, qty }) =>
+                `<li><span>${escapeHtml(`${qty}× ${product.title}`)}</span><strong>${escapeHtml(formatPrice(product.price * qty))}</strong></li>`,
+            )
+            .join('')}
+        </ul>
+        <p class="cart-delivery-summary-total">
+          <span>${escapeHtml(t('cart.total'))}</span>
+          <strong>${escapeHtml(formatPrice(cartTotal()))}</strong>
+        </p>
+      </div>`
   }
 
   if (totalEl) totalEl.textContent = formatPrice(cartTotal())
@@ -241,6 +328,7 @@ function renderCartDrawer() {
 function openCart() {
   const drawer = document.getElementById('cart-drawer')
   if (!drawer) return
+  setCheckoutStep('cart')
   drawer.hidden = false
   requestAnimationFrame(() => drawer.classList.add('is-open'))
   document.body.classList.add('cart-open')
@@ -252,6 +340,7 @@ function closeCart() {
   if (!drawer) return
   drawer.classList.remove('is-open')
   document.body.classList.remove('cart-open')
+  setCheckoutStep('cart')
   window.setTimeout(() => {
     if (!drawer.classList.contains('is-open')) drawer.hidden = true
   }, 280)
@@ -268,6 +357,78 @@ function applyShopQuery(query, categorySlug = 'all') {
   renderCategories(root)
   renderGrid(root)
   root.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function setLocateStatus(message, isError = false) {
+  const el = document.querySelector('[data-cart-locate-status]')
+  if (!el) return
+  if (!message) {
+    el.hidden = true
+    el.textContent = ''
+    el.classList.remove('is-error')
+    return
+  }
+  el.hidden = false
+  el.textContent = message
+  el.classList.toggle('is-error', isError)
+}
+
+function requestLocation() {
+  if (!navigator.geolocation) {
+    setLocateStatus(t('cart.locateUnsupported'), true)
+    return
+  }
+  setLocateStatus(t('cart.locatePending'))
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      state.delivery.lat = pos.coords.latitude
+      state.delivery.lng = pos.coords.longitude
+      setLocateStatus(t('cart.locateOk'))
+    },
+    () => {
+      setLocateStatus(t('cart.locateDenied'), true)
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 },
+  )
+}
+
+function dismissBotNudge() {
+  const nudge = document.getElementById('bot-nudge')
+  if (nudge) {
+    nudge.classList.remove('is-visible')
+    window.setTimeout(() => {
+      nudge.hidden = true
+    }, 280)
+  }
+  document.getElementById('bot-fab')?.classList.remove('is-nudge')
+  try {
+    sessionStorage.setItem(BOT_NUDGE_KEY, '1')
+  } catch {
+    /* ignore */
+  }
+}
+
+function maybeShowBotNudge() {
+  try {
+    if (sessionStorage.getItem(BOT_NUDGE_KEY) === '1') return
+  } catch {
+    /* ignore */
+  }
+  const nudge = document.getElementById('bot-nudge')
+  const fab = document.getElementById('bot-fab')
+  if (!nudge || !fab) return
+
+  window.setTimeout(() => {
+    if (symptomBot?.isOpen?.()) return
+    try {
+      if (sessionStorage.getItem(BOT_NUDGE_KEY) === '1') return
+    } catch {
+      /* ignore */
+    }
+    nudge.hidden = false
+    requestAnimationFrame(() => nudge.classList.add('is-visible'))
+    fab.classList.add('is-nudge')
+  }, 2200)
 }
 
 function wireShop(root) {
@@ -309,12 +470,27 @@ function wireShop(root) {
   })
 
   root.querySelector('[data-symptom-open]')?.addEventListener('click', () => {
+    dismissBotNudge()
     symptomBot?.open()
   })
 }
 
 function wireCart() {
   document.getElementById('cart-fab')?.addEventListener('click', openCart)
+  document.getElementById('bot-fab')?.addEventListener('click', () => {
+    dismissBotNudge()
+    symptomBot?.open()
+  })
+  document.querySelector('[data-bot-nudge-dismiss]')?.addEventListener('click', (event) => {
+    event.stopPropagation()
+    dismissBotNudge()
+  })
+  document.getElementById('bot-nudge')?.addEventListener('click', (event) => {
+    if (event.target.closest('[data-bot-nudge-dismiss]')) return
+    dismissBotNudge()
+    symptomBot?.open()
+  })
+
   document.querySelectorAll('[data-cart-open]').forEach((el) =>
     el.addEventListener('click', (e) => {
       e.preventDefault()
@@ -337,6 +513,20 @@ function wireCart() {
 
   document.querySelector('[data-cart-checkout]')?.addEventListener('click', () => {
     if (!cartCount()) return
+    setCheckoutStep('delivery')
+    renderCartDrawer()
+    document.querySelector('[data-cart-building]')?.focus()
+  })
+
+  document.querySelector('[data-cart-back]')?.addEventListener('click', () => {
+    setCheckoutStep('cart')
+    renderCartDrawer()
+  })
+
+  document.querySelector('[data-cart-locate]')?.addEventListener('click', requestLocation)
+
+  document.querySelector('[data-cart-whatsapp]')?.addEventListener('click', () => {
+    if (!cartCount()) return
     const url = buildWhatsAppUrl(buildOrderMessage())
     window.open(url, '_blank', 'noopener,noreferrer')
   })
@@ -352,8 +542,27 @@ function refreshShopUi() {
   renderCategories(root)
   renderGrid(root)
   renderCartChrome()
+  setCheckoutStep(state.checkoutStep)
   renderCartDrawer()
   symptomBot?.refresh()
+  // Refresh delivery footer static labels
+  document.querySelectorAll('[data-cart-footer-delivery] [data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n')
+    if (key) el.textContent = t(key)
+  })
+  document.querySelectorAll('[data-cart-footer-delivery] [data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder')
+    if (key) el.setAttribute('placeholder', t(key))
+  })
+  document.querySelectorAll('#float-dock [data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n')
+    if (key) el.textContent = t(key)
+  })
+  document.querySelectorAll('#float-dock [data-i18n-aria]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-aria')
+    if (key) el.setAttribute('aria-label', t(key))
+  })
+  if (state.delivery.lat != null) setLocateStatus(t('cart.locateOk'))
 }
 
 export async function initShop() {
@@ -375,6 +584,7 @@ export async function initShop() {
   wireCart()
   renderCartChrome()
   renderGrid(root)
+  maybeShowBotNudge()
   onLangChange(refreshShopUi)
 
   try {

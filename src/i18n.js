@@ -142,19 +142,90 @@ export const STRINGS = {
   'cart.each': { en: 'each', ar: 'للقطعة' },
   'cart.qty': { en: 'Quantity', ar: 'الكمية' },
   'cart.total': { en: 'Approx. total', ar: 'الإجمالي التقريبي' },
-  'cart.checkout': { en: 'Order on WhatsApp', ar: 'اطلب على واتساب' },
+  'cart.checkout': { en: 'Continue to delivery', ar: 'كمّل لبيانات التوصيل' },
   'cart.openAria': { en: 'Open cart', ar: 'فتح السلة' },
   'cart.orderHello': {
-    en: 'Hello Marieliez Pharmacy, I would like to order:',
-    ar: 'أهلاً صيدلية ماريليز، عايز أطلب:',
+    en: 'Hello Marieliez Pharmacy,',
+    ar: 'أهلاً صيدلية ماريليز،',
+  },
+  'cart.orderFeel': {
+    en: 'I feel {feel}.',
+    ar: 'حاسس بـ {feel}.',
+  },
+  'cart.orderHistoryIntro': {
+    en: 'What I shared with Dr. Magdy:',
+    ar: 'اللي قولته لد. مجدي:',
+  },
+  'cart.orderWant': {
+    en: 'I would like to get:',
+    ar: 'عايز آخد:',
   },
   'cart.orderTotal': { en: 'Approx. total:', ar: 'الإجمالي التقريبي:' },
+  'cart.orderAddressIntro': {
+    en: 'My delivery details:',
+    ar: 'بيانات التوصيل بتاعتي:',
+  },
+  'cart.orderBuilding': { en: 'Building / floor:', ar: 'العمارة / الدور:' },
+  'cart.orderStreet': { en: 'Street:', ar: 'الشارع:' },
+  'cart.orderArea': { en: 'Area:', ar: 'المنطقة:' },
+  'cart.orderNotes': { en: 'Notes:', ar: 'ملاحظات:' },
+  'cart.orderMap': { en: 'Location map:', ar: 'موقع على الخريطة:' },
+  'cart.deliveryTitle': { en: 'Delivery details', ar: 'بيانات التوصيل' },
+  'cart.deliveryHint': {
+    en: 'Share your pin and address so we can confirm delivery on WhatsApp.',
+    ar: 'شارك موقعك والعنوان عشان نأكد التوصيل على واتساب.',
+  },
+  'cart.orderSummary': { en: 'Order summary', ar: 'ملخص الطلب' },
+  'cart.locate': { en: 'Use my location', ar: 'استخدم موقعي' },
+  'cart.locatePending': {
+    en: 'Getting your location…',
+    ar: 'بنجيب موقعك…',
+  },
+  'cart.locateOk': {
+    en: 'Location pinned — we’ll include a Google Maps link.',
+    ar: 'تم تثبيت الموقع — هنضيف لينك Google Maps.',
+  },
+  'cart.locateDenied': {
+    en: 'Couldn’t get location. You can still type your address below.',
+    ar: 'مقدرناش نجيب الموقع. تقدر تكتب العنوان تحت.',
+  },
+  'cart.locateUnsupported': {
+    en: 'Location isn’t available on this device. Please type your address.',
+    ar: 'الموقع مش متاح على الجهاز ده. اكتب العنوان من فضلك.',
+  },
+  'cart.fieldBuilding': { en: 'Building / floor', ar: 'العمارة / الدور' },
+  'cart.fieldStreet': { en: 'Street', ar: 'الشارع' },
+  'cart.fieldArea': { en: 'Area / compound', ar: 'المنطقة / الكمبوند' },
+  'cart.fieldNotes': { en: 'Notes for the rider', ar: 'ملاحظات للمندوب' },
+  'cart.phBuilding': {
+    en: 'e.g. Bldg 12, floor 3',
+    ar: 'مثال: عمارة 12، الدور 3',
+  },
+  'cart.phStreet': { en: 'Street name', ar: 'اسم الشارع' },
+  'cart.phArea': {
+    en: 'e.g. Al Golf, Nasr City',
+    ar: 'مثال: الجولف، مدينة نصر',
+  },
+  'cart.phNotes': {
+    en: 'Gate code, landmark, preferred time…',
+    ar: 'كود البوابة، علامة مميزة، وقت مناسب…',
+  },
+  'cart.back': { en: 'Back to cart', ar: 'رجوع للسلة' },
+  'cart.sendWhatsApp': { en: 'Send on WhatsApp', ar: 'ابعت على واتساب' },
 
   'bot.title': { en: 'Dr. Magdy', ar: 'د. مجدي' },
   'bot.subtitle': { en: 'Symptom guide', ar: 'دليل الأعراض' },
   'bot.doctorName': { en: 'Dr. Magdy', ar: 'د. مجدي' },
   'bot.close': { en: 'Close', ar: 'إغلاق' },
   'bot.chipsAria': { en: 'Common symptoms', ar: 'أعراض شائعة' },
+  'bot.openAria': { en: 'Ask Dr. Magdy', ar: 'اسأل د. مجدي' },
+  'bot.sendAria': { en: 'Send', ar: 'ابعت' },
+  'bot.nudgeTitle': { en: 'Ask Dr. Magdy', ar: 'اسأل د. مجدي' },
+  'bot.nudgeBody': {
+    en: 'Need product suggestions? Tell him how you feel.',
+    ar: 'محتاج اقتراحات منتجات؟ قول له حاسس بإيه.',
+  },
+  'bot.nudgeDismissAria': { en: 'Dismiss suggestion', ar: 'إخفاء الاقتراح' },
   'bot.welcome': {
     en: 'Hi — I’m Dr. Magdy. Tell me how you feel, or pick a common symptom. I’ll suggest products from our shelf.',
     ar: 'أهلاً — أنا د. مجدي. قول لي حاسس بإيه، أو اختار عَرَض شائع. هقترحلك منتجات من الرف.',
@@ -170,7 +241,7 @@ export const STRINGS = {
   },
   'bot.clarify': {
     en: 'A few options that may fit: tap one, or type more detail:',
-    ar: 'شوية اختيارات ممكن تناسبك: اختار واحدة، أو اكتب تفاصيل أكتر:',
+    ar: 'شوية اختيارات ممكن تناسبك: اختار واحد، أو اكتب تفاصيل أكتر:',
   },
   'bot.found': {
     en: 'Based on “{q}”, here are catalog suggestions:',

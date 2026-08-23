@@ -995,14 +995,10 @@
             <div class="bot-header-copy">
               <h2 id="bot-title" data-i18n="bot.title">Dr. Magdy</h2>
               <p class="bot-subtitle" data-i18n="bot.subtitle">Symptom guide</p>
-              <p class="bot-disclaimer" data-i18n="bot.disclaimer">
-                Informational only, not medical advice. Always consult a Marieliez
-                pharmacist, especially for prescriptions or if symptoms are severe.
-              </p>
             </div>
           </div>
           <div class="bot-header-actions">
-            <button type="button" class="text-btn" data-bot-reset data-i18n="bot.reset">
+            <button type="button" class="bot-reset-btn" data-bot-reset data-i18n="bot.reset">
               Start over
             </button>
             <button type="button" class="text-btn" data-bot-close data-i18n="bot.close">
@@ -1010,7 +1006,11 @@
             </button>
           </div>
         </header>
-        <div class="bot-chips" data-bot-chips role="toolbar" aria-label="Common symptoms"></div>
+        <p class="bot-disclaimer" data-i18n="bot.disclaimer">
+          Informational only, not medical advice. Always consult a Marieliez
+          pharmacist, especially for prescriptions or if symptoms are severe.
+        </p>
+        <div class="bot-chips" data-bot-chips role="toolbar" data-i18n-aria="bot.chipsAria" aria-label="Common symptoms"></div>
         <div class="bot-thread" data-bot-thread aria-live="polite"></div>
         <form class="bot-form" data-bot-form>
           <label class="visually-hidden" for="bot-input" data-i18n="shop.feelCta">
@@ -1025,28 +1025,74 @@
             autocomplete="off"
             enterkeyhint="send"
           />
-          <button type="submit" class="btn btn-filled btn-sm" data-i18n="bot.send">Send</button>
+          <button type="submit" class="bot-send-btn" data-i18n-aria="bot.sendAria" aria-label="Send">
+            <span data-i18n="bot.send">Send</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+              <path
+                d="M5 12h12M13 6l6 6-6 6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
         </form>
       </div>
     </aside>
 
-    <button type="button" class="cart-fab" id="cart-fab" hidden data-i18n-aria="cart.openAria" aria-label="Open cart">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
-        <path
-          d="M6.5 7.5h11l-.9 10.2a1.8 1.8 0 0 1-1.8 1.6H9.2a1.8 1.8 0 0 1-1.8-1.6L6.5 7.5Z"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linejoin="round"
+    <div class="float-dock" id="float-dock">
+      <div class="bot-nudge" id="bot-nudge" hidden>
+        <img
+          class="bot-nudge-avatar"
+          src="/images/dr-magdy.jpg"
+          alt=""
+          width="36"
+          height="36"
+          decoding="async"
         />
-        <path
-          d="M9 7.5V6.2A3 3 0 0 1 12 3.2 3 3 0 0 1 15 6.2v1.3"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-      </svg>
-      <span class="cart-badge" data-cart-count hidden>0</span>
-    </button>
+        <div class="bot-nudge-copy">
+          <strong data-i18n="bot.nudgeTitle">Ask Dr. Magdy</strong>
+          <p data-i18n="bot.nudgeBody">Need product suggestions? Tell him how you feel.</p>
+        </div>
+        <button
+          type="button"
+          class="bot-nudge-dismiss"
+          data-bot-nudge-dismiss
+          data-i18n-aria="bot.nudgeDismissAria"
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
+      </div>
+      <button
+        type="button"
+        class="bot-fab"
+        id="bot-fab"
+        data-i18n-aria="bot.openAria"
+        aria-label="Ask Dr. Magdy"
+      >
+        <img src="/images/dr-magdy.jpg" alt="" width="52" height="52" decoding="async" />
+        <span class="bot-fab-pulse" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="cart-fab" id="cart-fab" hidden data-i18n-aria="cart.openAria" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+          <path
+            d="M6.5 7.5h11l-.9 10.2a1.8 1.8 0 0 1-1.8 1.6H9.2a1.8 1.8 0 0 1-1.8-1.6L6.5 7.5Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 7.5V6.2A3 3 0 0 1 12 3.2 3 3 0 0 1 15 6.2v1.3"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span class="cart-badge" data-cart-count hidden>0</span>
+      </button>
+    </div>
 
     <div class="cart-drawer" id="cart-drawer" hidden>
       <div class="cart-backdrop" data-cart-close tabindex="-1" aria-hidden="true"></div>
@@ -1061,7 +1107,7 @@
           <button type="button" class="text-btn" data-cart-close data-i18n="cart.close">Close</button>
         </header>
         <div class="cart-body" data-cart-body></div>
-        <footer class="cart-footer">
+        <footer class="cart-footer" data-cart-footer-cart>
           <div class="cart-total-row">
             <span data-i18n="cart.total">Approx. total</span>
             <strong data-cart-total>~ EGP 0</strong>
@@ -1070,8 +1116,75 @@
             Prices are liable to change
           </p>
           <button type="button" class="btn btn-filled" data-cart-checkout disabled>
-            <span data-i18n="cart.checkout">Order on WhatsApp</span>
+            <span data-i18n="cart.checkout">Continue to delivery</span>
           </button>
+        </footer>
+        <footer class="cart-footer cart-delivery" data-cart-footer-delivery hidden>
+          <div class="cart-delivery-head">
+            <h3 data-i18n="cart.deliveryTitle">Delivery details</h3>
+            <p data-i18n="cart.deliveryHint">
+              Share your pin and address so we can confirm delivery on WhatsApp.
+            </p>
+          </div>
+          <div class="cart-locate-row">
+            <button type="button" class="btn btn-tonal btn-sm" data-cart-locate>
+              <span data-i18n="cart.locate">Use my location</span>
+            </button>
+            <p class="cart-locate-status" data-cart-locate-status hidden></p>
+          </div>
+          <div class="cart-address-fields">
+            <label class="cart-field">
+              <span data-i18n="cart.fieldBuilding">Building / floor</span>
+              <input
+                type="text"
+                name="building"
+                data-cart-building
+                data-i18n-placeholder="cart.phBuilding"
+                placeholder="e.g. Bldg 12, floor 3"
+                autocomplete="address-line2"
+              />
+            </label>
+            <label class="cart-field">
+              <span data-i18n="cart.fieldStreet">Street</span>
+              <input
+                type="text"
+                name="street"
+                data-cart-street
+                data-i18n-placeholder="cart.phStreet"
+                placeholder="Street name"
+                autocomplete="address-line1"
+              />
+            </label>
+            <label class="cart-field">
+              <span data-i18n="cart.fieldArea">Area / compound</span>
+              <input
+                type="text"
+                name="area"
+                data-cart-area
+                data-i18n-placeholder="cart.phArea"
+                placeholder="e.g. Al Golf, Nasr City"
+                autocomplete="address-level2"
+              />
+            </label>
+            <label class="cart-field">
+              <span data-i18n="cart.fieldNotes">Notes for the rider</span>
+              <textarea
+                name="notes"
+                rows="2"
+                data-cart-notes
+                data-i18n-placeholder="cart.phNotes"
+                placeholder="Gate code, landmark, preferred time…"
+              ></textarea>
+            </label>
+          </div>
+          <div class="cart-delivery-actions">
+            <button type="button" class="btn btn-tonal" data-cart-back>
+              <span data-i18n="cart.back">Back to cart</span>
+            </button>
+            <button type="button" class="btn btn-filled" data-cart-whatsapp>
+              <span data-i18n="cart.sendWhatsApp">Send on WhatsApp</span>
+            </button>
+          </div>
         </footer>
       </div>
     </div>

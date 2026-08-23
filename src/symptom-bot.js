@@ -66,7 +66,7 @@ export function matchSymptomRules(text) {
  */
 export function initSymptomBot(api) {
   const panel = document.getElementById('symptom-bot')
-  if (!panel) return { open() {}, close() {}, refresh() {} }
+  if (!panel) return { open() {}, close() {}, refresh() {}, getCustomerIntent: () => ({ feelings: [], turns: [] }) }
 
   const thread = panel.querySelector('[data-bot-thread]')
   const form = panel.querySelector('[data-bot-form]')
@@ -75,6 +75,24 @@ export function initSymptomBot(api) {
 
   const state = {
     open: false,
+    /** @type {{ role: 'user' | 'assist', text: string }[]} */
+    turns: [],
+    /** @type {string[]} */
+    feelings: [],
+  }
+
+  function recordTurn(role, text) {
+    const cleaned = String(text || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    if (!cleaned) return
+    state.turns.push({ role, text: cleaned })
+    if (role === 'user') {
+      const key = normalizeTrigger(cleaned)
+      if (key && !state.feelings.some((f) => normalizeTrigger(f) === key)) {
+        state.feelings.push(cleaned)
+      }
+    }
   }
 
   function scrollThread() {
@@ -82,8 +100,9 @@ export function initSymptomBot(api) {
     thread.scrollTop = thread.scrollHeight
   }
 
-  function appendBubble(role, html) {
+  function appendBubble(role, html, plainText = '') {
     if (!thread) return
+    if (plainText) recordTurn(role === 'user' ? 'user' : 'assist', plainText)
     const div = document.createElement('div')
     if (role === 'assist') {
       div.className = 'bot-msg bot-msg-assist'
@@ -121,7 +140,9 @@ export function initSymptomBot(api) {
   function resetConversation() {
     if (!thread) return
     thread.innerHTML = ''
-    appendBubble('assist', `<p>${escapeHtml(t('bot.welcome'))}</p>`)
+    state.turns = []
+    state.feelings = []
+    appendBubble('assist', `<p>${escapeHtml(t('bot.welcome'))}</p>`, t('bot.welcome'))
     renderChips()
   }
 
@@ -171,12 +192,14 @@ export function initSymptomBot(api) {
     })
     const qLabel = userText || labelOf(rule)
     const note = rule ? noteOf(rule) : ''
+    const foundText = t('bot.found', { q: qLabel })
     const html = `
-      <p>${escapeHtml(t('bot.found', { q: qLabel }))}</p>
+      <p>${escapeHtml(foundText)}</p>
       ${note ? `<p class="bot-note">${escapeHtml(note)}</p>` : ''}
       <div class="bot-products">${productListHtml(products, keywords.slice(0, 3).join(' '), categorySlugs?.[0])}</div>
     `
-    appendBubble('assist', html)
+    const plain = note ? `${foundText} ${note}` : foundText
+    appendBubble('assist', html, plain)
   }
 
   function presentRule(rule, userText) {
@@ -187,11 +210,13 @@ export function initSymptomBot(api) {
             `<button type="button" class="bot-chip" data-bot-follow="${escapeHtml(rule.id)}" data-follow-id="${escapeHtml(f.id)}">${escapeHtml(labelOf(f))}</button>`,
         )
         .join('')
+      const clarify = t('bot.clarify')
       appendBubble(
         'assist',
-        `<p>${escapeHtml(t('bot.clarify'))}</p><div class="bot-inline-chips">${options}
+        `<p>${escapeHtml(clarify)}</p><div class="bot-inline-chips">${options}
           <button type="button" class="bot-chip bot-chip-muted" data-bot-follow="${escapeHtml(rule.id)}" data-follow-id="__all">${escapeHtml(labelOf(rule))}</button>
         </div>`,
+        clarify,
       )
       return
     }
@@ -201,19 +226,21 @@ export function initSymptomBot(api) {
   function handleUserText(text) {
     const trimmed = text.trim()
     if (!trimmed) return
-    appendBubble('user', `<p>${escapeHtml(trimmed)}</p>`)
+    appendBubble('user', `<p>${escapeHtml(trimmed)}</p>`, trimmed)
 
     const matches = matchSymptomRules(trimmed)
     if (!matches.length) {
       // Fall back: treat free text as catalog search keywords
       const products = recommendByKeywords(api.getProducts(), [trimmed], { limit: 10 })
       if (products.length) {
+        const foundText = t('bot.found', { q: trimmed })
         appendBubble(
           'assist',
-          `<p>${escapeHtml(t('bot.found', { q: trimmed }))}</p><div class="bot-products">${productListHtml(products, trimmed)}</div>`,
+          `<p>${escapeHtml(foundText)}</p><div class="bot-products">${productListHtml(products, trimmed)}</div>`,
+          foundText,
         )
       } else {
-        appendBubble('assist', `<p>${escapeHtml(t('bot.none'))}</p>`)
+        appendBubble('assist', `<p>${escapeHtml(t('bot.none'))}</p>`, t('bot.none'))
       }
       return
     }
@@ -227,9 +254,11 @@ export function initSymptomBot(api) {
             `<button type="button" class="bot-chip" data-bot-chip="${escapeHtml(r.id)}">${escapeHtml(labelOf(r))}</button>`,
         )
         .join('')
+      const clarify = t('bot.clarify')
       appendBubble(
         'assist',
-        `<p>${escapeHtml(t('bot.clarify'))}</p><div class="bot-inline-chips">${options}</div>`,
+        `<p>${escapeHtml(clarify)}</p><div class="bot-inline-chips">${options}</div>`,
+        clarify,
       )
       return
     }
@@ -244,6 +273,7 @@ export function initSymptomBot(api) {
     document.body.classList.add('bot-open')
     if (thread && !thread.childElementCount) resetConversation()
     input?.focus()
+    document.getElementById('bot-fab')?.classList.remove('is-nudge')
   }
 
   function close() {
@@ -275,8 +305,9 @@ export function initSymptomBot(api) {
     if (chip) {
       const rule = SYMPTOM_RULES.find((r) => r.id === chip.dataset.botChip)
       if (!rule) return
-      appendBubble('user', `<p>${escapeHtml(labelOf(rule))}</p>`)
-      presentRule(rule, labelOf(rule))
+      const label = labelOf(rule)
+      appendBubble('user', `<p>${escapeHtml(label)}</p>`, label)
+      presentRule(rule, label)
       return
     }
 
@@ -286,14 +317,16 @@ export function initSymptomBot(api) {
       if (!rule) return
       const fid = follow.dataset.followId
       if (fid === '__all') {
-        appendBubble('user', `<p>${escapeHtml(labelOf(rule))}</p>`)
-        showRecommendations(rule, rule.keywords, rule.categorySlugs, labelOf(rule))
+        const label = labelOf(rule)
+        appendBubble('user', `<p>${escapeHtml(label)}</p>`, label)
+        showRecommendations(rule, rule.keywords, rule.categorySlugs, label)
         return
       }
       const fu = rule.followUps?.find((f) => f.id === fid)
       if (!fu) return
-      appendBubble('user', `<p>${escapeHtml(labelOf(fu))}</p>`)
-      showRecommendations(rule, fu.keywords, fu.categorySlugs || rule.categorySlugs, labelOf(fu))
+      const label = labelOf(fu)
+      appendBubble('user', `<p>${escapeHtml(label)}</p>`, label)
+      showRecommendations(rule, fu.keywords, fu.categorySlugs || rule.categorySlugs, label)
       return
     }
 
@@ -330,11 +363,22 @@ export function initSymptomBot(api) {
         const key = el.getAttribute('data-i18n-placeholder')
         if (key) el.setAttribute('placeholder', t(key))
       })
+      panel.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+        const key = el.getAttribute('data-i18n-aria')
+        if (key) el.setAttribute('aria-label', t(key))
+      })
       if (thread?.childElementCount) {
         // Keep history; only refresh chip bar labels
         renderChips()
       }
     },
     isOpen: () => state.open,
+    /** Plain-language customer intent for WhatsApp checkout. */
+    getCustomerIntent() {
+      return {
+        feelings: [...state.feelings],
+        turns: state.turns.map((turn) => ({ ...turn })),
+      }
+    },
   }
 }
