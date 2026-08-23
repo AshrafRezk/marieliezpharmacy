@@ -88,10 +88,11 @@ function pharmacyIcon() {
       </span>
       <span class="map-pin-pharmacy-point"></span>
     </span>`,
-    // Tall teardrop: tip sits on lat/lng; popup opens above the head so the pin stays readable
-    iconSize: [48, 64],
-    iconAnchor: [24, 64],
-    popupAnchor: [0, -70],
+    // Tall teardrop: tip sits on lat/lng; popup opens above the head so the pin stays readable.
+    // Head ~56px so pharmacies dominate vs 40px hospital/compound chips at city zoom.
+    iconSize: [56, 90],
+    iconAnchor: [28, 90],
+    popupAnchor: [0, -96],
   })
 }
 
