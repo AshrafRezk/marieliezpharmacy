@@ -297,6 +297,26 @@ async function resolveClosestRoute(origin) {
   }
 }
 
+/**
+ * Mobile-first Leaflet popup options: fit inside the map with padding clear of
+ * zoom/locate controls (top-left) and floating actions (bottom-right).
+ * @param {import('leaflet').Map} map
+ * @param {import('leaflet').PopupOptions} [extras]
+ */
+function mapPopupOptions(map, extras = {}) {
+  const size = map.getSize()
+  const edgePad = Math.max(14, Math.min(24, Math.round(size.x * 0.04)))
+  return {
+    maxWidth: Math.min(300, Math.max(196, size.x - edgePad * 2)),
+    minWidth: 160,
+    autoPan: true,
+    keepInView: true,
+    autoPanPaddingTopLeft: L.point(56, 18),
+    autoPanPaddingBottomRight: L.point(edgePad, 72),
+    ...extras,
+  }
+}
+
 function pharmacyPopup(branch) {
   const navigateUrl = mapsDirectionsUrl(branch.lat, branch.lng)
   const phones = getBranchPhones(branch.id)
@@ -475,14 +495,15 @@ export function initPharmacyMap(container) {
   // Compounds/hospitals still render for context when the user pans or zooms out.
   const branchBounds = L.latLngBounds(branches.map((b) => [b.lat, b.lng]))
 
+  const sharedPopupOpts = () => mapPopupOptions(map)
+
   compounds.forEach((c) => {
     const center = ringCentroid(c.ring)
     const centerLatLng = { lat: center[0], lng: center[1] }
-    const popupOpts = { autoPan: false }
 
     const layer = L.polygon(c.ring, compoundStyleForTheme(getTheme())).addTo(map)
     compoundLayers.push(layer)
-    layer.bindPopup(compoundPopup(c), popupOpts)
+    layer.bindPopup(compoundPopup(c), sharedPopupOpts())
     layer.on('click', () => {
       flyToPinContext(map, centerLatLng, { marker: layer, open: true })
     })
@@ -495,7 +516,7 @@ export function initPharmacyMap(container) {
         keyboard: false,
       })
         .addTo(map)
-        .bindPopup(compoundPopup(c), popupOpts)
+        .bindPopup(compoundPopup(c), sharedPopupOpts())
       logoMarker.on('click', () => {
         flyToPinContext(map, centerLatLng, { marker: logoMarker, open: true })
       })
@@ -507,7 +528,7 @@ export function initPharmacyMap(container) {
       .addTo(map)
       .bindPopup(
         `<div class="map-popup"><strong>${h.name}</strong><p>${h.context}</p></div>`,
-        { autoPan: false },
+        sharedPopupOpts(),
       )
     marker.on('click', () => {
       flyToPinContext(map, h, { marker, open: true })
@@ -530,11 +551,10 @@ export function initPharmacyMap(container) {
       title: `${t('brand.wordmark')}: ${branchName(b)}`,
     })
       .addTo(map)
-      .bindPopup(pharmacyPopup(b), {
-        offset: L.point(0, -4),
-        autoPan: false,
-        autoPanPadding: [48, 48],
-      })
+      .bindPopup(
+        pharmacyPopup(b),
+        mapPopupOptions(map, { offset: L.point(0, -4) }),
+      )
     markersById.set(b.id, marker)
     marker.on('click', () => {
       focusBranch(map, marker, b, { open: true })
@@ -542,6 +562,14 @@ export function initPharmacyMap(container) {
     marker.on('popupopen', () => {
       const el = marker.getElement()
       el?.classList.add('is-popup-open')
+      // Keep maxWidth in sync if the map was resized since bind.
+      const popup = marker.getPopup()
+      if (popup) {
+        const next = mapPopupOptions(map, { offset: L.point(0, -4) })
+        popup.options.maxWidth = next.maxWidth
+        popup.options.autoPanPaddingTopLeft = next.autoPanPaddingTopLeft
+        popup.options.autoPanPaddingBottomRight = next.autoPanPaddingBottomRight
+      }
     })
     marker.on('popupclose', () => {
       const el = marker.getElement()
