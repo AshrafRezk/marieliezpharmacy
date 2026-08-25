@@ -169,15 +169,20 @@ export const STRINGS = {
     en: 'My delivery details:',
     ar: 'بيانات التوصيل بتاعتي:',
   },
+  'cart.orderName': { en: 'Name:', ar: 'الاسم:' },
   'cart.orderBuilding': { en: 'Building / floor:', ar: 'العمارة / الدور:' },
   'cart.orderStreet': { en: 'Street:', ar: 'الشارع:' },
   'cart.orderArea': { en: 'Area:', ar: 'المنطقة:' },
   'cart.orderNotes': { en: 'Notes:', ar: 'ملاحظات:' },
   'cart.orderMap': { en: 'Location map:', ar: 'موقع على الخريطة:' },
+  'cart.orderBranch': {
+    en: 'Closest branch (recommended):',
+    ar: 'أقرب فرع (موصى به):',
+  },
   'cart.deliveryTitle': { en: 'Delivery details', ar: 'بيانات التوصيل' },
   'cart.deliveryHint': {
-    en: 'Share your pin and address so we can confirm delivery on WhatsApp.',
-    ar: 'شارك موقعك والعنوان عشان نأكد التوصيل على واتساب.',
+    en: 'Add your name, share your pin, and type your address so we can confirm delivery on WhatsApp.',
+    ar: 'اكتب اسمك، شارك موقعك، واكتب العنوان عشان نأكد التوصيل على واتساب.',
   },
   'cart.orderSummary': { en: 'Order summary', ar: 'ملخص الطلب' },
   'cart.botIntentTitle': {
@@ -194,21 +199,31 @@ export const STRINGS = {
     ar: 'بنجيب موقعك…',
   },
   'cart.locateOk': {
-    en: 'Location pinned — we’ll include a Google Maps link.',
-    ar: 'تم تثبيت الموقع — هنضيف لينك Google Maps.',
+    en: 'Location pinned — we’ll route you to the closest branch.',
+    ar: 'تم تثبيت الموقع — هنوجّهك لأقرب فرع.',
+  },
+  'cart.locateOkBranch': {
+    en: 'Closest branch: {branch}. We’ll open WhatsApp there.',
+    ar: 'أقرب فرع: {branch}. هنفتح واتساب عليه.',
   },
   'cart.locateDenied': {
-    en: 'Couldn’t get location. You can still type your address below.',
-    ar: 'مقدرناش نجيب الموقع. تقدر تكتب العنوان تحت.',
+    en: 'Couldn’t get location. You can still type your name and address — we’ll use our primary WhatsApp.',
+    ar: 'مقدرناش نجيب الموقع. تقدر تكتب الاسم والعنوان — هنستخدم واتساب الفرع الرئيسي.',
   },
   'cart.locateUnsupported': {
-    en: 'Location isn’t available on this device. Please type your address.',
-    ar: 'الموقع مش متاح على الجهاز ده. اكتب العنوان من فضلك.',
+    en: 'Location isn’t available on this device. Please type your name and address.',
+    ar: 'الموقع مش متاح على الجهاز ده. اكتب الاسم والعنوان من فضلك.',
   },
+  'cart.needName': {
+    en: 'Please enter your name before sending on WhatsApp.',
+    ar: 'من فضلك اكتب اسمك قبل الإرسال على واتساب.',
+  },
+  'cart.fieldName': { en: 'Your name', ar: 'اسمك' },
   'cart.fieldBuilding': { en: 'Building / floor', ar: 'العمارة / الدور' },
   'cart.fieldStreet': { en: 'Street', ar: 'الشارع' },
   'cart.fieldArea': { en: 'Area / compound', ar: 'المنطقة / الكمبوند' },
   'cart.fieldNotes': { en: 'Notes for the rider', ar: 'ملاحظات للمندوب' },
+  'cart.phName': { en: 'Full name', ar: 'الاسم بالكامل' },
   'cart.phBuilding': {
     en: 'e.g. Bldg 12, floor 3',
     ar: 'مثال: عمارة 12، الدور 3',
@@ -289,7 +304,7 @@ export const STRINGS = {
   'emergency.laneCosmetics': { en: 'Cosmetics', ar: 'تجميل' },
   'emergency.laneUrgent': { en: 'Emergency', ar: 'طوارئ' },
   'emergency.wa': { en: 'WhatsApp for emergencies', ar: 'واتساب للطوارئ' },
-  'emergency.call': { en: 'Call +20 112 111 1605', ar: 'اتصل بينا: +20 112 111 1605' },
+  'emergency.call': { en: 'Call +20 112 111 1600', ar: 'اتصل بينا: +20 112 111 1600' },
 
   'brands.eyebrow': { en: 'Cosmetics', ar: 'تجميل' },
   'brands.title': {
@@ -312,8 +327,8 @@ export const STRINGS = {
     ar: 'لاقي فرع ماريليز',
   },
   'map.lede': {
-    en: 'Two neighbourhood pharmacies in Nasr City and New Cairo. Tap a branch to fly the map there, with East Cairo compounds and hospitals highlighted nearby.',
-    ar: 'فرعين قريبين في مدينة نصر والتجمّع. اضغط على الفرع عشان الخريطة تودّيك هناك، مع كمباوندات ومستشفيات شرق القاهرة حواليها.',
+    en: 'Three neighbourhood pharmacies in Nasr City, New Cairo, and El Katameya. Tap a branch to fly the map there, with East Cairo compounds and hospitals highlighted nearby.',
+    ar: 'ثلاثة فروع قريبة في مدينة نصر والتجمّع والقطامية. اضغط على الفرع عشان الخريطة تودّيك هناك، مع كمباوندات ومستشفيات شرق القاهرة حواليها.',
   },
   'map.regionAria': {
     en: 'Interactive map of Marieliez Pharmacy branches',
@@ -344,6 +359,16 @@ export const STRINGS = {
     en: 'Show Highland Park Branch on the map',
     ar: 'عرض فرع هايلاند بارك على الخريطة',
   },
+  'map.katameyaName': { en: 'El Katameya Branch', ar: 'فرع القطامية' },
+  'map.katameyaAddr': {
+    en: 'El Katameya, New Cairo',
+    ar: 'القطامية، التجمع',
+  },
+  'map.katameyaArea': { en: 'El Katameya', ar: 'القطامية' },
+  'map.katameyaAria': {
+    en: 'Show El Katameya Branch on the map',
+    ar: 'عرض فرع القطامية على الخريطة',
+  },
   'map.popupWa': { en: 'WhatsApp', ar: 'واتساب' },
   'map.popupCall': { en: 'Call', ar: 'اتصال' },
 
@@ -358,8 +383,8 @@ export const STRINGS = {
   },
   'faq.q1': { en: 'Where are your branches?', ar: 'أين توجد فروعكم؟' },
   'faq.a1': {
-    en: 'Marieliez Pharmacy has two Cairo locations: Al Golf Branch at 23 Ahmed Tayseer St., Al Golf, Nasr City, and Highland Park Branch at Highland Park Mall, El Andalus, New Cairo. Call or WhatsApp <a class="inline-link" href="tel:+201121111605">+20 112 111 1605</a>.',
-    ar: 'لصيدلية ماريليز فرعان في القاهرة: فرع الجولف في ٢٣ شارع أحمد تيسير، الجولف، مدينة نصر، وفرع هايلاند بارك في مول هايلاند بارك، الأندلس، التجمع الخامس. اتصل أو راسلنا على واتساب <a class="inline-link" href="tel:+201121111605">+20 112 111 1605</a>.',
+    en: 'Marieliez Pharmacy has three Cairo locations: Al Golf Branch at 23 Ahmed Tayseer St., Al Golf, Nasr City (<a class="inline-link" href="tel:+201286789937">+20 128 678 9937</a>); Highland Park Branch at Highland Park Mall, El Andalus, New Cairo (<a class="inline-link" href="tel:+201121111600">+20 112 111 1600</a>); and El Katameya Branch in El Katameya, New Cairo (<a class="inline-link" href="tel:+201108057225">+20 110 805 7225</a>). Site-wide WhatsApp orders use <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a>.',
+    ar: 'لصيدلية ماريليز ثلاثة فروع في القاهرة: فرع الجولف في ٢٣ شارع أحمد تيسير، الجولف، مدينة نصر (<a class="inline-link" href="tel:+201286789937">+20 128 678 9937</a>)؛ وفرع هايلاند بارك في مول هايلاند بارك، الأندلس، التجمع الخامس (<a class="inline-link" href="tel:+201121111600">+20 112 111 1600</a>)؛ وفرع القطامية في القطامية، التجمع (<a class="inline-link" href="tel:+201108057225">+20 110 805 7225</a>). طلبات واتساب العامة عبر <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a>.',
   },
   'faq.q2': {
     en: 'Which areas and compounds do you serve?',
@@ -371,8 +396,8 @@ export const STRINGS = {
   },
   'faq.q3': { en: 'How do I order online?', ar: 'كيف أطلب أونلاين؟' },
   'faq.a3': {
-    en: 'Browse the <a class="inline-link" href="#shop">product catalog</a>, add items to your cart, then send the order on WhatsApp. You can also message <a class="inline-link" href="https://wa.me/201121111605" target="_blank" rel="noopener noreferrer">+20 112 111 1605</a> with a prescription or product list.',
-    ar: 'تصفّح <a class="inline-link" href="#shop">كتالوج المنتجات</a>، أضِف إلى السلة، ثم أرسل الطلب على واتساب. يمكنك أيضًا مراسلة <a class="inline-link" href="https://wa.me/201121111605" target="_blank" rel="noopener noreferrer">+20 112 111 1605</a> بالروشتة أو قائمة المنتجات.',
+    en: 'Browse the <a class="inline-link" href="#shop">product catalog</a>, add items to your cart, then send the order on WhatsApp. You can also message <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a> with a prescription or product list.',
+    ar: 'تصفّح <a class="inline-link" href="#shop">كتالوج المنتجات</a>، أضِف إلى السلة، ثم أرسل الطلب على واتساب. يمكنك أيضًا مراسلة <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a> بالروشتة أو قائمة المنتجات.',
   },
   'faq.q4': {
     en: 'What about urgent or emergency orders?',
@@ -404,8 +429,8 @@ export const STRINGS = {
   'visit.waLabel': { en: 'WhatsApp', ar: 'واتساب' },
   'visit.waValue': { en: 'Chat with us', ar: 'كلّمنا' },
   'visit.callAria': {
-    en: 'Call Marieliez Pharmacy at +20 112 111 1605',
-    ar: 'اتصل بصيدلية ماريليز على +20 112 111 1605',
+    en: 'Call Marieliez Pharmacy at +20 112 111 1600',
+    ar: 'اتصل بصيدلية ماريليز على +20 112 111 1600',
   },
   'visit.callLabel': { en: 'Call', ar: 'اتصال' },
   'visit.fbAria': {
@@ -422,8 +447,8 @@ export const STRINGS = {
   'map.navigate': { en: 'Navigate to pharmacy', ar: 'التوجيه للصيدلية' },
 
   'footer.locations': {
-    en: 'Al Golf, Nasr City · Highland Park, New Cairo',
-    ar: 'الجولف، مدينة نصر · هايلاند بارك، التجمع',
+    en: 'Al Golf, Nasr City · Highland Park, New Cairo · El Katameya',
+    ar: 'الجولف، مدينة نصر · هايلاند بارك، التجمع · القطامية',
   },
   'footer.tax': { en: 'Tax ID 239-850-394', ar: 'البطاقة الضريبية ٢٣٩-٨٥٠-٣٩٤' },
   'footer.powered': {

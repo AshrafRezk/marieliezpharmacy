@@ -87,11 +87,11 @@
             "url": "https://marieliezpharmacy.com/",
             "logo": "https://marieliezpharmacy.com/logo.png",
             "image": "https://marieliezpharmacy.com/logo.png",
-            "telephone": "+201121111605",
+            "telephone": "+201121111600",
             "currenciesAccepted": "EGP",
             "slogan": "Treats like family",
             "taxID": "239-850-394",
-            "description": "Marieliez Pharmacy is a neighbourhood pharmacy in Cairo, Egypt, with branches in Nasr City (Al Golf) and New Cairo (Highland Park Mall). We fill prescriptions, offer medication counseling, stock everyday wellness products and dermocosmetics, and accept orders by WhatsApp and phone.",
+            "description": "Marieliez Pharmacy is a neighbourhood pharmacy in Cairo, Egypt, with branches in Nasr City (Al Golf), New Cairo (Highland Park Mall), and El Katameya. We fill prescriptions, offer medication counseling, stock everyday wellness products and dermocosmetics, and accept orders by WhatsApp and phone.",
             "sameAs": [
               "https://www.facebook.com/MarieliezPharmacyeg/",
               "https://www.talabat.com/egypt/pharmacy/718221/marieliez-pharmacy"
@@ -101,6 +101,7 @@
               { "@type": "AdministrativeArea", "name": "New Cairo" },
               { "@type": "AdministrativeArea", "name": "Nasr City" },
               { "@type": "Place", "name": "Highland Park" },
+              { "@type": "Place", "name": "El Katameya" },
               { "@type": "Place", "name": "SODIC Eastown" },
               { "@type": "Place", "name": "Villette" },
               { "@type": "Place", "name": "Akoya" },
@@ -110,7 +111,7 @@
             "contactPoint": [
               {
                 "@type": "ContactPoint",
-                "telephone": "+201121111605",
+                "telephone": "+201121111600",
                 "contactType": "customer service",
                 "availableLanguage": ["en", "ar"],
                 "areaServed": "EG"
@@ -121,7 +122,7 @@
                 "@type": "Pharmacy",
                 "@id": "https://marieliezpharmacy.com/#branch-golf",
                 "name": "Marieliez Pharmacy Al Golf Branch",
-                "telephone": "+201121111605",
+                "telephone": ["+201286789937", "+20224150507"],
                 "address": {
                   "@type": "PostalAddress",
                   "streetAddress": "23 Ahmed Tayseer St., Al Golf",
@@ -139,7 +140,7 @@
                 "@type": "Pharmacy",
                 "@id": "https://marieliezpharmacy.com/#branch-highland-park",
                 "name": "Marieliez Pharmacy Highland Park Branch",
-                "telephone": "+201121111605",
+                "telephone": ["+201121111600", "+201121111601", "+201121111602"],
                 "address": {
                   "@type": "PostalAddress",
                   "streetAddress": "Highland Park Mall, El Andalus, South Investors",
@@ -151,6 +152,23 @@
                   "@type": "GeoCoordinates",
                   "latitude": 29.991139,
                   "longitude": 31.5088302
+                }
+              },
+              {
+                "@type": "Pharmacy",
+                "@id": "https://marieliezpharmacy.com/#branch-katameya",
+                "name": "Marieliez Pharmacy El Katameya Branch",
+                "telephone": ["+201108057225", "+201108057226", "+201108057227"],
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "El Katameya",
+                  "addressRegion": "Cairo",
+                  "addressCountry": "EG"
+                },
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": 29.978741,
+                  "longitude": 31.398024
                 }
               }
             ]
@@ -172,7 +190,7 @@
                 "name": "Where are Marieliez Pharmacy branches located?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Marieliez Pharmacy has two branches in Cairo: Al Golf Branch at 23 Ahmed Tayseer St., Al Golf, Nasr City, and Highland Park Branch at Highland Park Mall, El Andalus, New Cairo. Call or WhatsApp +20 112 111 1605."
+                  "text": "Marieliez Pharmacy has three Cairo locations: Al Golf Branch at 23 Ahmed Tayseer St., Al Golf, Nasr City (+20 128 678 9937); Highland Park Branch at Highland Park Mall, El Andalus, New Cairo (+20 112 111 1600); and El Katameya Branch in El Katameya, New Cairo (+20 110 805 7225). Site-wide WhatsApp orders use +20 112 111 1600."
                 }
               },
               {
@@ -188,7 +206,7 @@
                 "name": "How do I order from Marieliez Pharmacy online?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Browse the product catalog on marieliezpharmacy.com, add items to your cart, then send the order on WhatsApp. You can also message +20 112 111 1605 directly with your prescription or product list."
+                  "text": "Browse the product catalog on marieliezpharmacy.com, add items to your cart, then send the order on WhatsApp. You can also message +20 112 111 1600 directly with your prescription or product list."
                 }
               },
               {
@@ -196,7 +214,7 @@
                 "name": "Can Marieliez Pharmacy help with urgent or emergency orders?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. Urgent and emergency orders are prioritized. Contact Marieliez Pharmacy immediately by WhatsApp or phone at +20 112 111 1605."
+                  "text": "Yes. Urgent and emergency orders are prioritized. Contact Marieliez Pharmacy immediately by WhatsApp or phone at +20 112 111 1600."
                 }
               },
               {
@@ -625,14 +643,14 @@
         <div class="emergency-actions">
           <a
             class="btn btn-filled"
-            href="https://wa.me/201121111605"
+            href="https://wa.me/201121111600"
             target="_blank"
             rel="noopener noreferrer"
           >
             <span data-i18n="emergency.wa">WhatsApp for emergencies</span>
           </a>
-          <a class="btn btn-tonal" href="tel:+201121111605">
-            <span data-i18n="emergency.call">Call +20 112 111 1605</span>
+          <a class="btn btn-tonal" href="tel:+201121111600">
+            <span data-i18n="emergency.call">Call +20 112 111 1600</span>
           </a>
         </div>
       </section>
@@ -699,8 +717,8 @@
         <p class="eyebrow" data-i18n="map.eyebrow">Locations</p>
         <h2 data-i18n="map.title">Find a Marieliez branch</h2>
         <p class="lede" data-i18n="map.lede">
-          Two neighbourhood pharmacies in Nasr City and New Cairo. Tap a branch
-          to fly the map there, with East Cairo compounds and hospitals
+          Three neighbourhood pharmacies in Nasr City, New Cairo, and El Katameya.
+          Tap a branch to fly the map there, with East Cairo compounds and hospitals
           highlighted nearby.
         </p>
 
@@ -758,6 +776,18 @@
             <strong data-i18n="map.hpName">Highland Park Branch</strong>
             <span data-i18n="map.hpAddr">Highland Park Mall, El Andalus, New Cairo</span>
           </li>
+          <li
+            class="branch-item"
+            data-branch-id="katameya"
+            role="button"
+            tabindex="0"
+            aria-current="false"
+            data-i18n-aria="map.katameyaAria"
+            aria-label="Show El Katameya Branch on the map"
+          >
+            <strong data-i18n="map.katameyaName">El Katameya Branch</strong>
+            <span data-i18n="map.katameyaAddr">El Katameya, New Cairo</span>
+          </li>
         </ul>
       </section>
 
@@ -773,10 +803,15 @@
           <details class="faq-item">
             <summary data-i18n="faq.q1">Where are your branches?</summary>
             <p data-i18n-html="faq.a1">
-              Marieliez Pharmacy has two Cairo locations: Al Golf Branch at
-              23 Ahmed Tayseer St., Al Golf, Nasr City, and Highland Park Branch
-              at Highland Park Mall, El Andalus, New Cairo. Call or WhatsApp
-              <a class="inline-link" href="tel:+201121111605">+20 112 111 1605</a>.
+              Marieliez Pharmacy has three Cairo locations: Al Golf Branch at
+              23 Ahmed Tayseer St., Al Golf, Nasr City
+              (<a class="inline-link" href="tel:+201286789937">+20 128 678 9937</a>);
+              Highland Park Branch at Highland Park Mall, El Andalus, New Cairo
+              (<a class="inline-link" href="tel:+201121111600">+20 112 111 1600</a>);
+              and El Katameya Branch in El Katameya, New Cairo
+              (<a class="inline-link" href="tel:+201108057225">+20 110 805 7225</a>).
+              Site-wide WhatsApp orders use
+              <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a>.
             </p>
           </details>
           <details class="faq-item">
@@ -794,7 +829,7 @@
               Browse the
               <a class="inline-link" href="#shop">product catalog</a>, add items
               to your cart, then send the order on WhatsApp. You can also message
-              <a class="inline-link" href="https://wa.me/201121111605" target="_blank" rel="noopener noreferrer">+20 112 111 1605</a>
+              <a class="inline-link" href="https://wa.me/201121111600" target="_blank" rel="noopener noreferrer">+20 112 111 1600</a>
               with a prescription or product list.
             </p>
           </details>
@@ -839,7 +874,7 @@
         <div class="contact-grid">
           <a
             class="contact-tile"
-            href="https://wa.me/201121111605"
+            href="https://wa.me/201121111600"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
@@ -859,13 +894,13 @@
           </a>
           <a
             class="contact-tile"
-            href="tel:+201121111605"
-            aria-label="Call Marieliez Pharmacy at +20 112 111 1605"
+            href="tel:+201121111600"
+            aria-label="Call Marieliez Pharmacy at +20 112 111 1600"
             data-i18n-aria="visit.callAria"
           >
             <span class="tile-copy">
               <span class="tile-label" data-i18n="visit.callLabel">Call</span>
-              <span class="tile-value">+20 112 111 1605</span>
+              <span class="tile-value">+20 112 111 1600</span>
             </span>
             <span class="tile-icon tile-icon-call" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -894,6 +929,80 @@
             </span>
           </a>
         </div>
+
+        <div class="branch-contact-list" aria-label="Branch phone numbers">
+          <article class="branch-contact">
+            <h3 data-i18n="map.golfName">Al Golf Branch</h3>
+            <p class="branch-contact-addr" data-i18n="map.golfAddr">
+              23 Ahmed Tayseer St., Al Golf, Nasr City
+            </p>
+            <p class="branch-contact-phones">
+              <a class="inline-link" href="tel:+201286789937">+20 128 678 9937</a>
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+20224150507">02 2415 0507</a>
+            </p>
+            <p class="branch-contact-actions">
+              <a
+                class="inline-link"
+                href="https://wa.me/201286789937"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n="map.popupWa"
+                >WhatsApp</a
+              >
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201286789937" data-i18n="map.popupCall">Call</a>
+            </p>
+          </article>
+          <article class="branch-contact">
+            <h3 data-i18n="map.hpName">Highland Park Branch</h3>
+            <p class="branch-contact-addr" data-i18n="map.hpAddr">
+              Highland Park Mall, El Andalus, New Cairo
+            </p>
+            <p class="branch-contact-phones">
+              <a class="inline-link" href="tel:+201121111600">+20 112 111 1600</a>
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201121111601">+20 112 111 1601</a>
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201121111602">+20 112 111 1602</a>
+            </p>
+            <p class="branch-contact-actions">
+              <a
+                class="inline-link"
+                href="https://wa.me/201121111600"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n="map.popupWa"
+                >WhatsApp</a
+              >
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201121111600" data-i18n="map.popupCall">Call</a>
+            </p>
+          </article>
+          <article class="branch-contact">
+            <h3 data-i18n="map.katameyaName">El Katameya Branch</h3>
+            <p class="branch-contact-addr" data-i18n="map.katameyaAddr">El Katameya, New Cairo</p>
+            <p class="branch-contact-phones">
+              <a class="inline-link" href="tel:+201108057225">+20 110 805 7225</a>
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201108057226">+20 110 805 7226</a>
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201108057227">+20 110 805 7227</a>
+            </p>
+            <p class="branch-contact-actions">
+              <a
+                class="inline-link"
+                href="https://wa.me/201108057225"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n="map.popupWa"
+                >WhatsApp</a
+              >
+              <span class="footer-sep" aria-hidden="true">·</span>
+              <a class="inline-link" href="tel:+201108057225" data-i18n="map.popupCall">Call</a>
+            </p>
+          </article>
+        </div>
       </section>
     </main>
 
@@ -907,10 +1016,10 @@
       />
       <p>&copy; <span id="year"></span> <span data-i18n="brand.wordmark">Marieliez Pharmacy</span></p>
       <p class="footer-meta" data-i18n="footer.locations">
-        Al Golf, Nasr City · Highland Park, New Cairo
+        Al Golf, Nasr City · Highland Park, New Cairo · El Katameya
       </p>
       <p class="footer-meta">
-        <a class="inline-link" href="tel:+201121111605">+20 112 111 1605</a>
+        <a class="inline-link" href="tel:+201121111600">+20 112 111 1600</a>
         <span class="footer-sep" aria-hidden="true">·</span>
         <span data-i18n="footer.tax">Tax ID 239-850-394</span>
         <span class="footer-sep" aria-hidden="true">·</span>
@@ -1131,7 +1240,8 @@
           <div class="cart-delivery-head">
             <h3 data-i18n="cart.deliveryTitle">Delivery details</h3>
             <p data-i18n="cart.deliveryHint">
-              Share your pin and address so we can confirm delivery on WhatsApp.
+              Add your name, share your pin, and type your address so we can
+              confirm delivery on WhatsApp.
             </p>
           </div>
           <div class="cart-locate-row">
@@ -1141,6 +1251,18 @@
             <p class="cart-locate-status" data-cart-locate-status hidden></p>
           </div>
           <div class="cart-address-fields">
+            <label class="cart-field">
+              <span data-i18n="cart.fieldName">Your name</span>
+              <input
+                type="text"
+                name="customerName"
+                data-cart-name
+                data-i18n-placeholder="cart.phName"
+                placeholder="Full name"
+                autocomplete="name"
+                required
+              />
+            </label>
             <label class="cart-field">
               <span data-i18n="cart.fieldBuilding">Building / floor</span>
               <input

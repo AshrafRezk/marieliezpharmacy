@@ -1,7 +1,10 @@
 import {
   PRICE_DISCLAIMER,
+  PRIMARY_BRANCH_ID,
   buildWhatsAppUrl,
+  findClosestBranch,
   formatPrice,
+  mapsLocationUrl,
 } from './config.js'
 import { categoryLabel, getLang, onLangChange, t } from './i18n.js'
 import { searchProducts } from './search.js'
@@ -31,6 +34,7 @@ const state = {
   /** When true, delivery/WhatsApp is allowed even with an empty cart (symptom-bot flow). */
   checkoutFromBot: false,
   delivery: {
+    name: '',
     lat: null,
     lng: null,
     building: '',
@@ -88,16 +92,22 @@ function setCartQty(productId, qty) {
   renderCartDrawer()
 }
 
-function mapsLink(lat, lng) {
-  if (lat == null || lng == null) return ''
-  return `https://www.google.com/maps?q=${lat},${lng}`
+function branchLabel(branch) {
+  if (!branch) return ''
+  return branch.nameKey ? t(branch.nameKey) : branch.name
 }
 
 function readDeliveryFields() {
+  state.delivery.name = document.querySelector('[data-cart-name]')?.value?.trim() || ''
   state.delivery.building = document.querySelector('[data-cart-building]')?.value?.trim() || ''
   state.delivery.street = document.querySelector('[data-cart-street]')?.value?.trim() || ''
   state.delivery.area = document.querySelector('[data-cart-area]')?.value?.trim() || ''
   state.delivery.notes = document.querySelector('[data-cart-notes]')?.value?.trim() || ''
+}
+
+/** Closest branch when pin exists; otherwise Tagamo3 primary for WhatsApp. */
+function orderBranchId() {
+  return findClosestBranch(state.delivery.lat, state.delivery.lng)?.id || PRIMARY_BRANCH_ID
 }
 
 function buildOrderMessage() {
@@ -137,16 +147,22 @@ function buildOrderMessage() {
     parts.push('')
   }
 
-  const { building, street, area, notes, lat, lng } = state.delivery
-  const hasAddress = building || street || area || notes || (lat != null && lng != null)
-  if (hasAddress) {
+  const { name, building, street, area, notes, lat, lng } = state.delivery
+  const closest = findClosestBranch(lat, lng)
+  const hasDetails =
+    name || building || street || area || notes || (lat != null && lng != null)
+  if (hasDetails) {
     parts.push(t('cart.orderAddressIntro'))
+    if (name) parts.push(`${t('cart.orderName')} ${name}`)
     if (building) parts.push(`${t('cart.orderBuilding')} ${building}`)
     if (street) parts.push(`${t('cart.orderStreet')} ${street}`)
     if (area) parts.push(`${t('cart.orderArea')} ${area}`)
     if (notes) parts.push(`${t('cart.orderNotes')} ${notes}`)
-    const link = mapsLink(lat, lng)
+    const link = mapsLocationUrl(lat, lng)
     if (link) parts.push(`${t('cart.orderMap')} ${link}`)
+    if (closest) {
+      parts.push(`${t('cart.orderBranch')} ${branchLabel(closest)}`)
+    }
     parts.push('')
   }
 
@@ -286,6 +302,15 @@ function setCheckoutStep(step) {
   }
 }
 
+function enterDeliveryStep() {
+  setCheckoutStep('delivery')
+  renderCartDrawer()
+  if (state.delivery.lat == null) requestLocation({ silentUnsupported: true })
+  window.setTimeout(() => {
+    document.querySelector('[data-cart-name]')?.focus()
+  }, 80)
+}
+
 function renderCartDrawer() {
   const body = document.querySelector('[data-cart-body]')
   const totalEl = document.querySelector('[data-cart-total]')
@@ -390,15 +415,11 @@ function openDeliveryFromBot() {
   const drawer = document.getElementById('cart-drawer')
   if (!drawer) return
   state.checkoutFromBot = true
-  setCheckoutStep('delivery')
-  renderCartDrawer()
   drawer.hidden = false
   document.body.classList.add('cart-open')
   requestAnimationFrame(() => drawer.classList.add('is-open'))
   symptomBot?.close()
-  window.setTimeout(() => {
-    document.querySelector('[data-cart-building]')?.focus()
-  }, 320)
+  enterDeliveryStep()
 }
 
 function applyShopQuery(query, categorySlug = 'all') {
@@ -428,9 +449,18 @@ function setLocateStatus(message, isError = false) {
   el.classList.toggle('is-error', isError)
 }
 
-function requestLocation() {
+function refreshLocateStatus() {
+  const closest = findClosestBranch(state.delivery.lat, state.delivery.lng)
+  if (closest) {
+    setLocateStatus(t('cart.locateOkBranch', { branch: branchLabel(closest) }))
+  } else if (state.delivery.lat != null) {
+    setLocateStatus(t('cart.locateOk'))
+  }
+}
+
+function requestLocation({ silentUnsupported = false } = {}) {
   if (!navigator.geolocation) {
-    setLocateStatus(t('cart.locateUnsupported'), true)
+    if (!silentUnsupported) setLocateStatus(t('cart.locateUnsupported'), true)
     return
   }
   setLocateStatus(t('cart.locatePending'))
@@ -438,13 +468,26 @@ function requestLocation() {
     (pos) => {
       state.delivery.lat = pos.coords.latitude
       state.delivery.lng = pos.coords.longitude
-      setLocateStatus(t('cart.locateOk'))
+      refreshLocateStatus()
     },
     () => {
       setLocateStatus(t('cart.locateDenied'), true)
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 },
   )
+}
+
+function sendOrderOnWhatsApp() {
+  if (!canSendWhatsApp()) return
+  readDeliveryFields()
+  if (!state.delivery.name) {
+    setLocateStatus(t('cart.needName'), true)
+    document.querySelector('[data-cart-name]')?.focus()
+    return
+  }
+  const branchId = orderBranchId()
+  const url = buildWhatsAppUrl(buildOrderMessage(), branchId)
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 
 function dismissBotNudge() {
@@ -568,9 +611,7 @@ function wireCart() {
 
   document.querySelector('[data-cart-checkout]')?.addEventListener('click', () => {
     if (!cartCount()) return
-    setCheckoutStep('delivery')
-    renderCartDrawer()
-    document.querySelector('[data-cart-building]')?.focus()
+    enterDeliveryStep()
   })
 
   document.querySelector('[data-cart-back]')?.addEventListener('click', () => {
@@ -578,13 +619,9 @@ function wireCart() {
     renderCartDrawer()
   })
 
-  document.querySelector('[data-cart-locate]')?.addEventListener('click', requestLocation)
+  document.querySelector('[data-cart-locate]')?.addEventListener('click', () => requestLocation())
 
-  document.querySelector('[data-cart-whatsapp]')?.addEventListener('click', () => {
-    if (!canSendWhatsApp()) return
-    const url = buildWhatsAppUrl(buildOrderMessage())
-    window.open(url, '_blank', 'noopener,noreferrer')
-  })
+  document.querySelector('[data-cart-whatsapp]')?.addEventListener('click', sendOrderOnWhatsApp)
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !symptomBot?.isOpen?.()) closeCart()
@@ -617,7 +654,7 @@ function refreshShopUi() {
     const key = el.getAttribute('data-i18n-aria')
     if (key) el.setAttribute('aria-label', t(key))
   })
-  if (state.delivery.lat != null) setLocateStatus(t('cart.locateOk'))
+  if (state.delivery.lat != null) refreshLocateStatus()
 }
 
 export async function initShop() {

@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { compounds } from './data/compounds.js'
-import { PHONE_TEL, WHATSAPP_URL } from './config.js'
+import { getBranchPhones, getBranchPrimary } from './config.js'
 import { getTheme, onThemeChange } from './theme.js'
 import { onLangChange, t } from './i18n.js'
 
@@ -11,11 +11,11 @@ import { onLangChange, t } from './i18n.js'
  * Google share.google links were opaque (no public lat/lng redirect).
  * Coordinates reused from prior Marieliez PharmacyMap + public listings:
  *  - Al Golf / Nasr City: 30.081708, 31.3271294 (23 Ahmed Tayseer St.)
- *  - Highland Park / New Cairo: 29.991139, 31.5088302 (Highland Park Mall, El Andalus)
+ *  - Highland Park / New Cairo (Tagamo3): 29.991139, 31.5088302 (Highland Park Mall, El Andalus)
+ *  - El Katameya: 29.978741, 31.398024 (Google Maps place pin)
  * East Cairo compound polygons + logos: Sakneen SODIC public map API (2026-08-22).
+ * Phones live in config.js (BRANCH_PHONES); WhatsApp always uses that branch’s first number.
  */
-
-const WHATSAPP = WHATSAPP_URL
 
 const TILE_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -62,6 +62,17 @@ const branches = [
     address: 'Highland Park Mall, El Andalus, South Investors, New Cairo',
     lat: 29.991139,
     lng: 31.5088302,
+  },
+  {
+    id: 'katameya',
+    nameKey: 'map.katameyaName',
+    areaKey: 'map.katameyaArea',
+    addressKey: 'map.katameyaAddr',
+    name: 'El Katameya Branch',
+    area: 'El Katameya',
+    address: 'El Katameya, New Cairo',
+    lat: 29.978741,
+    lng: 31.398024,
   },
 ]
 
@@ -203,15 +214,23 @@ function mapsDirectionsUrl(lat, lng) {
 
 function pharmacyPopup(branch) {
   const navigateUrl = mapsDirectionsUrl(branch.lat, branch.lng)
+  const phones = getBranchPhones(branch.id)
+  const primary = getBranchPrimary(branch.id)
+  const phoneLines = phones
+    .map((p) => `<a class="map-popup-phone" href="${p.tel}">${p.display}</a>`)
+    .join('<span class="map-popup-phone-sep" aria-hidden="true">·</span>')
+  const waHref = primary?.whatsappUrl || '#'
+  const callHref = primary?.tel || '#'
   return `
     <div class="map-popup">
       <strong>${t('brand.wordmark')}</strong>
       <p class="map-popup-branch">${branchName(branch)}</p>
       <p>${branchAddress(branch)}</p>
+      ${phoneLines ? `<p class="map-popup-phones">${phoneLines}</p>` : ''}
       <div class="map-popup-actions">
         <a class="map-popup-navigate" href="${navigateUrl}" target="_blank" rel="noopener noreferrer">${t('map.navigate')}</a>
-        <a href="${WHATSAPP}" target="_blank" rel="noopener noreferrer">${t('map.popupWa')}</a>
-        <a href="${PHONE_TEL}">${t('map.popupCall')}</a>
+        <a href="${waHref}" target="_blank" rel="noopener noreferrer">${t('map.popupWa')}</a>
+        <a href="${callHref}">${t('map.popupCall')}</a>
       </div>
     </div>
   `
@@ -308,9 +327,39 @@ function focusBranch(map, marker, branch, { open = true } = {}) {
   flyToPinContext(map, branch, { marker, open })
 }
 
+function renderBranchPhones(listEl) {
+  listEl.querySelectorAll('[data-branch-id]').forEach((el) => {
+    const id = el.getAttribute('data-branch-id')
+    const phones = getBranchPhones(id)
+    const primary = getBranchPrimary(id)
+    if (!phones.length) return
+
+    let phoneRow = el.querySelector('.branch-phones')
+    if (!phoneRow) {
+      phoneRow = document.createElement('span')
+      phoneRow.className = 'branch-phones'
+      el.appendChild(phoneRow)
+    }
+
+    phoneRow.innerHTML = phones
+      .map((p, i) => {
+        const isPrimary = i === 0 && primary
+        const wa =
+          isPrimary
+            ? ` <a class="branch-wa" href="${primary.whatsappUrl}" target="_blank" rel="noopener noreferrer" data-branch-link>${t('map.popupWa')}</a>`
+            : ''
+        return `<a class="branch-phone" href="${p.tel}" data-branch-link>${p.display}</a>${wa}`
+      })
+      .join('<span class="branch-phone-sep" aria-hidden="true">·</span>')
+  })
+}
+
 function wireBranchList(map, markersById) {
   const list = document.querySelector('.branch-list')
   if (!list) return
+
+  renderBranchPhones(list)
+  onLangChange(() => renderBranchPhones(list))
 
   list.querySelectorAll('[data-branch-id]').forEach((el) => {
     const id = el.getAttribute('data-branch-id')
@@ -319,6 +368,7 @@ function wireBranchList(map, markersById) {
     if (!branch) return
 
     const activate = (event) => {
+      if (event.target.closest('[data-branch-link]')) return
       event.preventDefault()
       focusBranch(map, marker, branch)
       const frame = document.getElementById('pharmacy-map')
@@ -327,7 +377,10 @@ function wireBranchList(map, markersById) {
 
     el.addEventListener('click', activate)
     el.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') activate(event)
+      if (event.key === 'Enter' || event.key === ' ') {
+        if (event.target.closest('[data-branch-link]')) return
+        activate(event)
+      }
     })
   })
 }
@@ -374,7 +427,7 @@ export function initPharmacyMap(container) {
     compoundLayers.forEach((layer) => layer.setStyle(style))
   })
 
-  // Default camera frames the two pharmacy branches so pins stay readable.
+  // Default camera frames all pharmacy branches so pins stay readable.
   // Compounds/hospitals still render for context when the user pans or zooms out.
   const branchBounds = L.latLngBounds(branches.map((b) => [b.lat, b.lng]))
 

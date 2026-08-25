@@ -1198,6 +1198,83 @@ button.chip-cta {
   font-size: 0.9rem;
 }
 
+.branch-phones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.branch-phones a {
+  color: var(--md-sys-color-on-surface);
+  text-underline-offset: 0.15em;
+}
+
+.branch-phone-sep {
+  opacity: 0.45;
+}
+
+.branch-wa {
+  font-weight: 650;
+  color: var(--accent-soft) !important;
+}
+
+.map-popup-phones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.4rem;
+  margin-top: 0.45rem !important;
+}
+
+.map-popup-phone {
+  color: var(--md-sys-color-on-surface) !important;
+  font-size: 0.78rem;
+  text-underline-offset: 0.15em;
+}
+
+.map-popup-phone-sep {
+  opacity: 0.45;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.78rem;
+}
+
+.branch-contact-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.branch-contact {
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 70%, transparent);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-outline-variant);
+}
+
+.branch-contact h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  letter-spacing: -0.015em;
+  font-weight: 650;
+}
+
+.branch-contact-addr,
+.branch-contact-phones,
+.branch-contact-actions {
+  margin: 0.35rem 0 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.branch-contact-actions {
+  margin-top: 0.5rem;
+  font-weight: 550;
+}
+
 .inline-link {
   color: var(--md-sys-color-on-surface);
   text-underline-offset: 0.18em;
@@ -3242,6 +3319,10 @@ html[dir="rtl"] .bot-send-btn svg {
 
   .btn {
     min-width: 10.5rem;
+  }
+
+  .branch-contact-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .contact-grid {
