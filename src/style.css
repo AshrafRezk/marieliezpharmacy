@@ -69,7 +69,7 @@
   --pin-label-title: #e8f7f4;
   --compound-chip-bg: linear-gradient(165deg, rgba(28, 44, 40, 0.96), rgba(14, 24, 22, 0.96));
   --hospital-chip-bg: linear-gradient(165deg, rgba(30, 58, 78, 0.96), rgba(18, 36, 52, 0.96));
-  --hospital-initials: #e8f7ff;
+  --hospital-icon: #e8f7ff;
   --feedback-canvas-blend: screen;
   --feedback-canvas-opacity: 0.85;
   --hero-glow: radial-gradient(circle, rgba(61, 214, 195, 0.28), rgba(56, 189, 248, 0.08) 45%, transparent 72%);
@@ -185,7 +185,7 @@ html[data-theme="light"] {
   /* Near-black chip so cream/white compound logos stay readable on the light map */
   --compound-chip-bg: linear-gradient(165deg, rgba(16, 24, 22, 0.98), rgba(10, 18, 16, 0.98));
   --hospital-chip-bg: linear-gradient(165deg, rgba(224, 242, 254, 0.98), rgba(186, 230, 253, 0.95));
-  --hospital-initials: #0c4a6e;
+  --hospital-icon: #0c4a6e;
   --feedback-canvas-blend: multiply;
   --feedback-canvas-opacity: 0.45;
   --hero-glow: radial-gradient(circle, rgba(20, 184, 166, 0.22), rgba(56, 189, 248, 0.1) 45%, transparent 72%);
@@ -1135,10 +1135,9 @@ button.chip-cta {
 }
 
 .legend-pharmacy {
-  width: 1.05rem;
-  height: 1.35rem;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
   background: linear-gradient(145deg, var(--accent-soft), var(--accent) 55%, var(--accent-deep));
   box-shadow:
     0 0 14px var(--accent-glow),
@@ -1209,7 +1208,7 @@ button.chip-cta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.25rem 0.4rem;
+  gap: 0.35rem 0.5rem;
   margin-top: 0.35rem;
   font-size: 0.82rem;
   line-height: 1.35;
@@ -1220,8 +1219,10 @@ button.chip-cta {
   text-underline-offset: 0.15em;
 }
 
-.branch-phone-sep {
+.branch-phone-sep,
+.phone-row-sep {
   opacity: 0.45;
+  align-self: center;
 }
 
 .branch-wa {
@@ -1229,10 +1230,63 @@ button.chip-cta {
   color: var(--accent-soft) !important;
 }
 
+.phone-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.phone-row-num {
+  color: var(--md-sys-color-on-surface);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.phone-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 12px;
+  text-decoration: none !important;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.phone-btn:active {
+  transform: scale(0.94);
+}
+
+.phone-btn-call {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-deep);
+}
+
+.phone-btn-wa {
+  background: color-mix(in srgb, #25d366 18%, transparent);
+  color: #128c7e;
+}
+
+html[data-theme='dark'] .phone-btn-call,
+html:not([data-theme]) .phone-btn-call {
+  color: var(--accent-soft);
+}
+
+html[data-theme='dark'] .phone-btn-wa,
+html:not([data-theme]) .phone-btn-wa {
+  color: #6ce9a6;
+}
+
+.phone-btn svg {
+  display: block;
+}
+
 .map-popup-phones {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.4rem;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
   margin-top: 0.45rem !important;
 }
 
@@ -1246,6 +1300,16 @@ button.chip-cta {
   opacity: 0.45;
   color: var(--md-sys-color-on-surface-variant);
   font-size: 0.78rem;
+}
+
+.map-popup-phones .phone-row-num {
+  font-size: 0.78rem;
+}
+
+.map-popup-phones .phone-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
 }
 
 .branch-contact-list {
@@ -1269,17 +1333,18 @@ button.chip-cta {
 }
 
 .branch-contact-addr,
-.branch-contact-phones,
-.branch-contact-actions {
+.branch-contact-phones {
   margin: 0.35rem 0 0;
   color: var(--md-sys-color-on-surface-variant);
   font-size: 0.88rem;
   line-height: 1.45;
 }
 
-.branch-contact-actions {
-  margin-top: 0.5rem;
-  font-weight: 550;
+.branch-contact-phones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
 }
 
 .inline-link {
@@ -1408,11 +1473,11 @@ button.chip-cta {
   overflow: hidden !important;
 }
 
-/* Branded teardrop pin — large head (~56px) so pharmacies dominate at city zoom */
+/* Branded circular logo — ~56px so pharmacies dominate at city zoom */
 .map-marker-pharmacy.leaflet-marker-icon,
 .map-marker-pharmacy {
   width: 56px !important;
-  height: 90px !important;
+  height: 56px !important;
   overflow: visible !important;
 }
 
@@ -1420,7 +1485,7 @@ button.chip-cta {
   position: relative;
   display: block;
   width: 56px;
-  height: 90px;
+  height: 56px;
   pointer-events: none;
 }
 
@@ -1428,10 +1493,10 @@ button.chip-cta {
   position: relative;
   display: block;
   width: 56px;
-  height: 90px;
+  height: 56px;
   pointer-events: auto;
   filter: var(--pin-filter);
-  transform-origin: 50% 100%;
+  transform-origin: 50% 50%;
   transition:
     filter 0.2s var(--ease-out),
     transform 0.2s var(--ease-out);
@@ -1507,24 +1572,11 @@ button.chip-cta {
   box-shadow: inset 0 0 0 1px rgba(61, 214, 195, 0.25);
 }
 
-.map-pin-pharmacy-point {
-  position: absolute;
-  left: 50%;
-  top: 52px;
-  width: 30px;
-  height: 30px;
-  translate: -50% 0;
-  rotate: 45deg;
-  border-radius: 4px 0 5px 0;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 78%);
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.22);
-  z-index: 0;
-}
-
 .map-pin-pharmacy-label {
   position: absolute;
   left: 58px;
-  top: 10px;
+  top: 50%;
+  translate: 0 -50%;
   display: flex;
   flex-direction: column;
   gap: 0.12rem;
@@ -1609,7 +1661,7 @@ button.chip-cta {
   object-fit: contain !important;
 }
 
-/* Match compound logo chip size - initials instead of icon */
+/* Match compound logo chip size — medical cross icon */
 .map-marker-hospital.leaflet-marker-icon,
 .map-marker-hospital {
   width: 40px !important;
@@ -1633,15 +1685,12 @@ button.chip-cta {
   transition: box-shadow 0.2s var(--ease-out);
 }
 
-.map-marker-hospital-initials {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  color: var(--hospital-initials);
-  text-transform: uppercase;
-  user-select: none;
+.map-marker-hospital-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  color: var(--hospital-icon);
+  pointer-events: none;
 }
 
 .leaflet-marker-icon.map-marker-hospital:focus,

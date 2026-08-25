@@ -381,6 +381,8 @@ export const STRINGS = {
   },
   'map.popupWa': { en: 'WhatsApp', ar: 'واتساب' },
   'map.popupCall': { en: 'Call', ar: 'اتصال' },
+  'phone.callAria': { en: 'Call {phone}', ar: 'اتصل بـ {phone}' },
+  'phone.waAria': { en: 'WhatsApp {phone}', ar: 'واتساب {phone}' },
 
   'faq.eyebrow': { en: 'Questions', ar: 'أسئلة' },
   'faq.title': {

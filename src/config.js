@@ -11,7 +11,8 @@ const e164Digits = (value) => String(value).replace(/\D/g, '')
 export const PRIMARY_BRANCH_ID = 'tagamoa'
 
 /**
- * Ordered phones per branch. Index 0 is always WhatsApp + primary call for that branch.
+ * Ordered phones per branch. Index 0 is primary WhatsApp + call for that branch
+ * when the number supports WhatsApp (mobiles). Landlines are call-only.
  *
  * @type {Record<string, Array<{ e164: string, display: string }>>}
  */
@@ -33,6 +34,18 @@ export const BRANCH_PHONES = {
     { e164: '201108057226', display: '+20 110 805 7226' },
     { e164: '201108057227', display: '+20 110 805 7227' },
   ],
+}
+
+/**
+ * Egyptian landline (Call only, no WhatsApp).
+ * Matches local `02…` / `0224150507` and E.164 Cairo `202…` (country 20 + area 2).
+ * Mobiles stay on `2010` / `2011` / `2012` / `2015`.
+ */
+export function isLandlineE164(e164) {
+  const d = e164Digits(e164)
+  if (/^02/.test(d)) return true
+  if (/^202/.test(d)) return true
+  return false
 }
 
 /**
@@ -68,11 +81,15 @@ export const BRANCH_LOCATIONS = [
  */
 function normalizePhone(phone) {
   const e164 = e164Digits(phone.e164)
+  const landline = isLandlineE164(e164)
   return {
     e164,
     display: phone.display,
     tel: `tel:+${e164}`,
     whatsappUrl: `https://wa.me/${e164}`,
+    isLandline: landline,
+    /** Landlines are call-only; mobiles get Call + WhatsApp. */
+    supportsWhatsApp: !landline,
   }
 }
 

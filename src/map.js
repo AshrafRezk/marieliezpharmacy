@@ -1,7 +1,8 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { compounds } from './data/compounds.js'
-import { getBranchPhones, getBranchPrimary } from './config.js'
+import { getBranchPhones } from './config.js'
+import { phonesListHtml, renderBranchPhoneLists } from './phone-actions.js'
 import { getTheme, onThemeChange } from './theme.js'
 import { onLangChange, t } from './i18n.js'
 
@@ -14,7 +15,7 @@ import { onLangChange, t } from './i18n.js'
  *  - Highland Park / New Cairo (Tagamo3): 29.991139, 31.5088302 (Highland Park Mall, El Andalus)
  *  - El Katameya: 29.978741, 31.398024 (Google Maps place pin)
  * East Cairo compound polygons + logos: Sakneen SODIC public map API (2026-08-22).
- * Phones live in config.js (BRANCH_PHONES); WhatsApp always uses that branch’s first number.
+ * Phones live in config.js (BRANCH_PHONES); mobiles get Call + WhatsApp icons, landlines Call only.
  */
 
 const TILE_ATTR =
@@ -131,53 +132,30 @@ function pharmacyIcon(branch) {
             <span class="map-pin-pharmacy-logo"></span>
           </span>
         </span>
-        <span class="map-pin-pharmacy-point"></span>
       </span>
       <span class="map-pin-pharmacy-label">
         <span class="map-pin-pharmacy-label-title">${title}</span>
         ${sub ? `<span class="map-pin-pharmacy-label-sub">${sub}</span>` : ''}
       </span>
     </span>`,
-    // Tall teardrop + label: tip sits on lat/lng; label sits to the right (overflow visible).
-    // Head ~56px so pharmacies dominate vs 40px hospital/compound chips at city zoom.
-    iconSize: [56, 90],
-    iconAnchor: [28, 90],
-    popupAnchor: [0, -96],
+    // Circular logo + label: centre of circle sits on lat/lng; label to the right.
+    // ~56px so pharmacies dominate vs 40px hospital/compound chips at city zoom.
+    iconSize: [56, 56],
+    iconAnchor: [28, 28],
+    popupAnchor: [0, -34],
   })
 }
 
-/** Initials logo from hospital name (e.g. "Air Force Specialized Hospital" → "AF"). */
-function hospitalInitials(name) {
-  const stop = new Set([
-    'hospital',
-    'specialized',
-    'medical',
-    'clinic',
-    'centre',
-    'center',
-    'the',
-    'of',
-    'and',
-  ])
-  const words = name
-    .split(/\s+/)
-    .map((w) => w.replace(/[^A-Za-z]/g, ''))
-    .filter((w) => w && !stop.has(w.toLowerCase()))
-  if (words.length === 0) return name.slice(0, 2).toUpperCase()
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
-  return words
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-}
+/** Shared medical-cross SVG for all hospital map chips. */
+const HOSPITAL_MARKER_SVG = `<svg class="map-marker-hospital-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path fill="currentColor" d="M14.5 3.25h-5a1.25 1.25 0 0 0-1.25 1.25v4.75H3.5A1.25 1.25 0 0 0 2.25 10.5v3a1.25 1.25 0 0 0 1.25 1.25h4.75V19.5c0 .69.56 1.25 1.25 1.25h5c.69 0 1.25-.56 1.25-1.25v-4.75h4.75c.69 0 1.25-.56 1.25-1.25v-3c0-.69-.56-1.25-1.25-1.25h-4.75V4.5c0-.69-.56-1.25-1.25-1.25Z"/>
+</svg>`
 
-function hospitalIcon(hospital) {
-  const initials = hospitalInitials(hospital.name)
+function hospitalIcon(_hospital) {
   return L.divIcon({
     className: 'map-marker-hospital',
     html: `<span class="map-marker-hospital-inner" aria-hidden="true">
-      <span class="map-marker-hospital-initials">${initials}</span>
+      ${HOSPITAL_MARKER_SVG}
     </span>`,
     iconSize: [40, 40],
     iconAnchor: [20, 20],
@@ -215,12 +193,7 @@ function mapsDirectionsUrl(lat, lng) {
 function pharmacyPopup(branch) {
   const navigateUrl = mapsDirectionsUrl(branch.lat, branch.lng)
   const phones = getBranchPhones(branch.id)
-  const primary = getBranchPrimary(branch.id)
-  const phoneLines = phones
-    .map((p) => `<a class="map-popup-phone" href="${p.tel}">${p.display}</a>`)
-    .join('<span class="map-popup-phone-sep" aria-hidden="true">·</span>')
-  const waHref = primary?.whatsappUrl || '#'
-  const callHref = primary?.tel || '#'
+  const phoneLines = phonesListHtml(phones)
   return `
     <div class="map-popup">
       <strong>${t('brand.wordmark')}</strong>
@@ -229,8 +202,6 @@ function pharmacyPopup(branch) {
       ${phoneLines ? `<p class="map-popup-phones">${phoneLines}</p>` : ''}
       <div class="map-popup-actions">
         <a class="map-popup-navigate" href="${navigateUrl}" target="_blank" rel="noopener noreferrer">${t('map.navigate')}</a>
-        <a href="${waHref}" target="_blank" rel="noopener noreferrer">${t('map.popupWa')}</a>
-        <a href="${callHref}">${t('map.popupCall')}</a>
       </div>
     </div>
   `
@@ -327,39 +298,11 @@ function focusBranch(map, marker, branch, { open = true } = {}) {
   flyToPinContext(map, branch, { marker, open })
 }
 
-function renderBranchPhones(listEl) {
-  listEl.querySelectorAll('[data-branch-id]').forEach((el) => {
-    const id = el.getAttribute('data-branch-id')
-    const phones = getBranchPhones(id)
-    const primary = getBranchPrimary(id)
-    if (!phones.length) return
-
-    let phoneRow = el.querySelector('.branch-phones')
-    if (!phoneRow) {
-      phoneRow = document.createElement('span')
-      phoneRow.className = 'branch-phones'
-      el.appendChild(phoneRow)
-    }
-
-    phoneRow.innerHTML = phones
-      .map((p, i) => {
-        const isPrimary = i === 0 && primary
-        const wa =
-          isPrimary
-            ? ` <a class="branch-wa" href="${primary.whatsappUrl}" target="_blank" rel="noopener noreferrer" data-branch-link>${t('map.popupWa')}</a>`
-            : ''
-        return `<a class="branch-phone" href="${p.tel}" data-branch-link>${p.display}</a>${wa}`
-      })
-      .join('<span class="branch-phone-sep" aria-hidden="true">·</span>')
-  })
-}
-
 function wireBranchList(map, markersById) {
   const list = document.querySelector('.branch-list')
   if (!list) return
 
-  renderBranchPhones(list)
-  onLangChange(() => renderBranchPhones(list))
+  renderBranchPhoneLists(list)
 
   list.querySelectorAll('[data-branch-id]').forEach((el) => {
     const id = el.getAttribute('data-branch-id')

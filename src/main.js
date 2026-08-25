@@ -3,10 +3,12 @@ import { initTheme } from './theme.js'
 import { initShop } from './shop.js'
 import { initFeedback } from './feedback.js'
 import { initWelcome } from './welcome.js'
+import { initBranchPhoneLists } from './phone-actions.js'
 
 initTheme()
 initI18n()
 initWelcome()
+initBranchPhoneLists()
 
 const yearEl = document.getElementById('year')
 if (yearEl) yearEl.textContent = String(new Date().getFullYear())
