@@ -1145,6 +1145,16 @@ button.chip-cta {
     inset 0 0 0 1.5px rgba(255, 255, 255, 0.45);
 }
 
+.legend-you {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff7ed, #fb923c 55%, #ea580c 100%);
+  box-shadow:
+    0 0 10px rgba(251, 146, 60, 0.55),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.55);
+}
+
 .legend-hospital {
   background: rgba(125, 211, 252, 0.35);
   box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.55);
@@ -1153,6 +1163,105 @@ button.chip-cta {
 .legend-compound {
   background: rgba(61, 214, 195, 0.22);
   box-shadow: inset 0 0 0 1.5px rgba(61, 214, 195, 0.7);
+}
+
+.map-route-banner {
+  margin: 0;
+  padding: 0.7rem 1rem 0.8rem;
+  background: var(--map-legend-bg);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+  border-top: 1px solid var(--glass-edge);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  color: var(--md-sys-color-on-surface);
+}
+
+.map-route-banner.is-error {
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 550;
+}
+
+.map-locate-control a.map-locate-btn {
+  display: grid !important;
+  place-items: center;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  line-height: 1 !important;
+  color: var(--md-sys-color-on-surface) !important;
+  background: var(--leaflet-zoom-bg) !important;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-color: var(--glass-edge) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+.map-locate-control a.map-locate-btn:hover,
+.map-locate-control a.map-locate-btn:focus-visible {
+  color: var(--accent-deep) !important;
+}
+
+.map-marker-user.leaflet-marker-icon,
+.map-marker-user {
+  background: transparent !important;
+  border: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  overflow: visible !important;
+}
+
+.map-pin-user {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.map-pin-user-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(251, 146, 60, 0.35);
+  animation: map-user-pulse 2.2s var(--ease-out) infinite;
+}
+
+.map-pin-user-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fff7ed, #fb923c 52%, #c2410c 100%);
+  box-shadow:
+    0 0 0 2.5px rgba(255, 255, 255, 0.92),
+    0 0 0 4px rgba(234, 88, 12, 0.45),
+    0 4px 12px rgba(194, 65, 12, 0.4);
+}
+
+@keyframes map-user-pulse {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.85;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin-user-pulse {
+    animation: none;
+    opacity: 0.45;
+  }
 }
 
 .branch-list {
@@ -3074,6 +3183,20 @@ html[dir="rtl"] .bot-chips {
 .bot-note {
   color: var(--md-sys-color-on-surface-variant) !important;
   font-size: 0.82rem !important;
+}
+
+.bot-emergency {
+  padding: 0.15rem 0;
+}
+
+.bot-emergency-title {
+  font-weight: 700 !important;
+  color: color-mix(in srgb, #b42318 78%, var(--md-sys-color-on-surface)) !important;
+}
+
+.bot-bubble-assist:has(.bot-emergency) {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #b42318 35%, var(--md-sys-color-outline-variant));
+  background: color-mix(in srgb, #b42318 8%, var(--md-sys-color-surface-container-high));
 }
 
 .bot-inline-chips {

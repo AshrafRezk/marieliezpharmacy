@@ -7,6 +7,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { enrichProducts } from '../src/data/product-enrichment.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -116,13 +117,16 @@ async function main() {
     }
   }
 
-  const products = [...byId.values()].sort((a, b) =>
-    a.category.localeCompare(b.category) || a.title.localeCompare(b.title),
+  const products = enrichProducts(
+    [...byId.values()].sort(
+      (a, b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title),
+    ),
   )
 
   const payload = {
     source: STORE_PAGE,
     scrapedAt: new Date().toISOString(),
+    enrichedAt: new Date().toISOString(),
     currency: 'EGP',
     store: {
       name: store.name || 'Marieliez Pharmacy',

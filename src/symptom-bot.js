@@ -1,6 +1,9 @@
+import { WHATSAPP_URL } from './config.js'
+import { matchRedFlag } from './data/red-flags.js'
+import { SYMPTOM_CHIPS, SYMPTOM_RULES } from './data/symptom-map.js'
 import { getLang, t } from './i18n.js'
 import { recommendByKeywords } from './search.js'
-import { SYMPTOM_CHIPS, SYMPTOM_RULES } from './data/symptom-map.js'
+import { routeSymptomWithAi } from './symptom-ai.js'
 
 const escapeHtml = (value) =>
   String(value)
@@ -8,6 +11,74 @@ const escapeHtml = (value) =>
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
+
+/** Drop filler words so free-text catalog fallback does not match "had" inside product names. */
+const CATALOG_STOPWORDS = new Set([
+  'i',
+  'me',
+  'my',
+  'a',
+  'an',
+  'the',
+  'had',
+  'have',
+  'has',
+  'was',
+  'were',
+  'am',
+  'is',
+  'are',
+  'been',
+  'being',
+  'to',
+  'for',
+  'of',
+  'and',
+  'or',
+  'but',
+  'with',
+  'on',
+  'in',
+  'at',
+  'by',
+  'from',
+  'that',
+  'this',
+  'it',
+  'im',
+  "i'm",
+  'ive',
+  "i've",
+  'feel',
+  'feeling',
+  'felt',
+  'got',
+  'get',
+  'getting',
+  'like',
+  'really',
+  'very',
+  'so',
+  'just',
+  'please',
+  'help',
+  'انا',
+  'اني',
+  'عندي',
+  'عندى',
+  'حاسس',
+  'حاسة',
+  'حاسه',
+  'فيه',
+  'في',
+  'من',
+  'او',
+  'ال',
+  'علي',
+  'على',
+  'بي',
+  'لي',
+])
 
 function labelOf(entry) {
   const lang = getLang()
@@ -27,7 +98,16 @@ function normalizeTrigger(text) {
     .replace(/[أإآ]/g, 'ا')
     .replace(/ة/g, 'ه')
     .replace(/ى/g, 'ي')
+    .replace(/['’]/g, "'")
     .trim()
+}
+
+/** Meaningful tokens for catalog keyword fallback (never the raw sentence alone). */
+function catalogFallbackKeywords(text) {
+  return normalizeTrigger(text)
+    .split(/\s+/)
+    .map((tok) => tok.replace(/^[^a-z0-9\u0600-\u06FF]+|[^a-z0-9\u0600-\u06FF]+$/gi, ''))
+    .filter((tok) => tok.length > 2 && !CATALOG_STOPWORDS.has(tok))
 }
 
 export function matchSymptomRules(text) {
@@ -266,33 +346,57 @@ export function initSymptomBot(api) {
     showRecommendations(rule, rule.keywords, rule.categorySlugs, userText)
   }
 
-  function handleUserText(text) {
-    const trimmed = text.trim()
-    if (!trimmed) return
-    appendBubble('user', `<p>${escapeHtml(trimmed)}</p>`, trimmed)
+  function showRedFlagResponse() {
+    const title = t('bot.emergencyTitle')
+    const body = t('bot.emergencyBody')
+    const html = `
+      <div class="bot-emergency" role="alert">
+        <p class="bot-emergency-title">${escapeHtml(title)}</p>
+        <p>${escapeHtml(body)}</p>
+        <div class="bot-actions-row">
+          <a class="btn btn-filled btn-sm" href="tel:123">${escapeHtml(t('bot.emergencyCall'))}</a>
+          <a class="btn btn-tonal btn-sm" href="${escapeHtml(WHATSAPP_URL)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t('bot.emergencyWa'))}</a>
+        </div>
+      </div>`
+    appendBubble('assist', html, `${title} ${body}`)
+  }
 
-    const matches = matchSymptomRules(trimmed)
-    if (!matches.length) {
-      // Fall back: treat free text as catalog search keywords
-      const products = recommendByKeywords(api.getProducts(), [trimmed], { limit: 10 })
-      if (products.length) {
-        const foundText = t('bot.found', { q: trimmed })
-        appendBubble(
-          'assist',
-          `<p>${escapeHtml(foundText)}</p><div class="bot-products">${productListHtml(products, trimmed)}</div>`,
-          foundText,
-        )
-      } else {
-        appendBubble(
-          'assist',
-          `<p>${escapeHtml(t('bot.none'))}</p>${whatsappActionsHtml()}`,
-          t('bot.none'),
-        )
-      }
+  function showCatalogFallback(userText) {
+    const keywords = catalogFallbackKeywords(userText)
+    if (!keywords.length) {
+      appendBubble(
+        'assist',
+        `<p>${escapeHtml(t('bot.none'))}</p>${whatsappActionsHtml()}`,
+        t('bot.none'),
+      )
       return
     }
 
-    // If several strong matches, let user pick
+    const products = recommendByKeywords(api.getProducts(), keywords, { limit: 10 })
+    if (products.length) {
+      const foundText = t('bot.found', { q: userText })
+      appendBubble(
+        'assist',
+        `<p>${escapeHtml(foundText)}</p><div class="bot-products">${productListHtml(products, keywords.join(' '))}</div>`,
+        foundText,
+      )
+      return
+    }
+
+    appendBubble(
+      'assist',
+      `<p>${escapeHtml(t('bot.none'))}</p>${whatsappActionsHtml()}`,
+      t('bot.none'),
+    )
+  }
+
+  function presentFromRules(trimmed) {
+    const matches = matchSymptomRules(trimmed)
+    if (!matches.length) {
+      showCatalogFallback(trimmed)
+      return
+    }
+
     if (matches.length > 1) {
       const top = matches.slice(0, 4)
       const options = top
@@ -311,6 +415,38 @@ export function initSymptomBot(api) {
     }
 
     presentRule(matches[0], trimmed)
+  }
+
+  async function handleUserText(text) {
+    const trimmed = text.trim()
+    if (!trimmed) return
+    appendBubble('user', `<p>${escapeHtml(trimmed)}</p>`, trimmed)
+
+    // Safety gate first — never catalog-match emergencies like seizure.
+    if (matchRedFlag(trimmed)) {
+      showRedFlagResponse()
+      return
+    }
+
+    // Optional free-tier LLM (Netlify + GROQ_API_KEY / GEMINI_API_KEY). Soft-fails offline.
+    const ai = await routeSymptomWithAi(trimmed, getLang())
+    if (ai?.kind === 'emergency' || (ai?.kind === 'rule' && matchRedFlag(trimmed))) {
+      showRedFlagResponse()
+      return
+    }
+    if (ai?.kind === 'rule' && ai.ruleId) {
+      const rule = SYMPTOM_RULES.find((r) => r.id === ai.ruleId)
+      if (rule) {
+        presentRule(rule, trimmed)
+        return
+      }
+    }
+    if (ai?.kind === 'keywords' && ai.keywords?.length) {
+      showRecommendations(null, ai.keywords, ai.categorySlugs, trimmed)
+      return
+    }
+
+    presentFromRules(trimmed)
   }
 
   function open() {
@@ -344,7 +480,7 @@ export function initSymptomBot(api) {
     event.preventDefault()
     const value = input?.value || ''
     if (input) input.value = ''
-    handleUserText(value)
+    void handleUserText(value)
   })
 
   panel.addEventListener('click', (event) => {

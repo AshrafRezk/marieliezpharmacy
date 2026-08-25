@@ -735,7 +735,18 @@
             data-i18n-aria="map.mapAria"
             aria-label="Map of pharmacy branches"
           ></div>
+          <div
+            class="map-route-banner"
+            data-map-route-banner
+            hidden
+            role="status"
+            aria-live="polite"
+          ></div>
           <ul class="map-legend" data-i18n-aria="map.legendAria" aria-label="Map legend">
+            <li>
+              <span class="legend-swatch legend-you" aria-hidden="true"></span>
+              <span data-i18n="map.legendYou">You</span>
+            </li>
             <li>
               <span class="legend-swatch legend-pharmacy" aria-hidden="true"></span>
               <span data-i18n="map.legendPharmacy">Pharmacy</span>

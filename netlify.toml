@@ -1,9 +1,17 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Optional Dr. Magdy AI router — must stay above the SPA catch-all
+[[redirects]]
+    from = "/api/symptom-route"
+    to = "/.netlify/functions/symptom-route"
+    status = 200
+    force = true
 
 # SPA fallback: keeps deep links / refresh working
 [[redirects]]
@@ -43,4 +51,4 @@
   [headers.values]
     # img-src: product CDN (talabat.dhmedia.io) + map tiles.
     # connect-src: SW workbox CacheFirst fetches images; CSP on /* applies to sw.js too.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://talabat.dhmedia.io https://*.dhmedia.io https://*.basemaps.cartocdn.com; connect-src 'self' https://talabat.dhmedia.io https://*.dhmedia.io https://*.basemaps.cartocdn.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://talabat.dhmedia.io https://*.dhmedia.io https://*.basemaps.cartocdn.com; connect-src 'self' https://talabat.dhmedia.io https://*.dhmedia.io https://*.basemaps.cartocdn.com https://router.project-osrm.org; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"

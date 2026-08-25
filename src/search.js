@@ -1,3 +1,4 @@
+import { isKnownIngredientQuery } from './data/product-enrichment.js'
 import { ARABIC_VARIANTS, SEARCH_ALIASES } from './data/search-aliases.js'
 
 const DIACRITICS = /[\u064B-\u065F\u0670]/g
@@ -15,6 +16,7 @@ export function normalizeText(value) {
   }
 
   return s
+    .replace(/['’]/g, '')
     .replace(/[_/|,+]+/g, ' ')
     .replace(/[^\p{L}\p{N}\s.-]/gu, ' ')
     .replace(/\s+/g, ' ')
@@ -96,32 +98,107 @@ function fuzzyHit(hayTokens, term) {
   return hayTokens.some((tok) => tok.length >= 4 && levenshtein(tok, term) <= maxDist)
 }
 
+function productFieldText(product, field) {
+  const value = product?.[field]
+  if (Array.isArray(value)) return value.filter(Boolean).join(' ')
+  return value || ''
+}
+
+function brandMatchesTerm(brandText, brandTokens, term) {
+  if (!brandText || !term) return false
+  if (brandText === term) return true
+  // Multi-word brand prefix only: "bath & body" → "bath & body works"
+  // Also single-token prefix of multi-word brand: "eva" → "eva skin clinic"
+  if (term.length >= 3 && brandText.startsWith(`${term} `)) return true
+  if (term.includes(' ') && brandText.startsWith(term)) return true
+  // Single-token brand: exact token match only
+  if (!term.includes(' ') && brandTokens.length === 1 && brandTokens[0] === term) return true
+  if (!term.includes(' ') && brandTokens.includes(term) && term.length >= 4) return true
+  return false
+}
+
+function ingredientMatchesTerm(ingredientText, ingredientTokens, term) {
+  if (!ingredientText || term.length < 3) return false
+  if (ingredientTokens.includes(term)) return true
+  if (term.length >= 4 && ingredientText.includes(term)) return true
+  return ingredientTokens.some(
+    (tok) => tok.length >= 3 && (tok.startsWith(term) || (term.length >= 4 && term.startsWith(tok))),
+  )
+}
+
 /**
  * Score a product against expanded search terms.
  * Higher is better; 0 = no match.
+ * Brand and activeIngredients are indexed explicitly so company / ingredient queries
+ * surface trade brands and therapeutic alternatives.
  */
 export function scoreProduct(product, terms, primaryTerms = []) {
   const list = Array.isArray(terms) ? terms : terms?.all || []
   const primary = new Set(primaryTerms.length ? primaryTerms : list.slice(0, 1))
   if (!list.length) return 1
 
+  const brandText = normalizeText(productFieldText(product, 'brand'))
+  const ingredientText = normalizeText(productFieldText(product, 'activeIngredients'))
+  const titleText = normalizeText(product.title)
   const hay = normalizeText(
-    [product.title, product.category, product.subcategory, product.slug]
+    [
+      product.title,
+      product.brand,
+      productFieldText(product, 'activeIngredients'),
+      product.category,
+      product.subcategory,
+      product.slug,
+    ]
       .filter(Boolean)
       .join(' '),
   )
   const hayTokens = tokenize(hay)
+  const brandTokens = tokenize(brandText)
+  const ingredientTokens = tokenize(ingredientText)
   let score = 0
+
+  // Full-query brand phrase bonus (primary often includes the raw normalized query)
+  for (const phrase of primary) {
+    if (phrase.length >= 2 && brandMatchesTerm(brandText, brandTokens, phrase)) {
+      score += phrase.includes(' ') ? 48 : 28
+    }
+  }
 
   for (const term of list) {
     if (!term) continue
     const weight = primary.has(term) ? 1.6 : 1
-    if (hay.includes(term)) {
+    let hit = false
+
+    if (brandMatchesTerm(brandText, brandTokens, term)) {
+      score += (term.length >= 4 ? 22 : 16) * weight
+      hit = true
+    }
+
+    if (ingredientMatchesTerm(ingredientText, ingredientTokens, term)) {
+      score += (term.length >= 5 ? 20 : 14) * weight
+      hit = true
+    }
+
+    if (hit) continue
+
+    // Short fragments ("had", "ha") create false catalog hits — require real tokens.
+    if (term.length >= 3 && hayTokens.includes(term)) {
       score += (term.length >= 5 ? 12 : 8) * weight
-      if (normalizeText(product.title).includes(term)) score += 6 * weight
+      if (tokenize(titleText).includes(term)) score += 6 * weight
       continue
     }
-    if (hayTokens.some((tok) => tok.startsWith(term) || term.startsWith(tok))) {
+    if (term.length >= 4 && hay.includes(term)) {
+      score += (term.length >= 5 ? 12 : 8) * weight
+      if (titleText.includes(term)) score += 6 * weight
+      continue
+    }
+    if (
+      term.length >= 3 &&
+      hayTokens.some(
+        (tok) =>
+          tok.length >= 3 && (tok.startsWith(term) || (term.length >= 4 && term.startsWith(tok))),
+      )
+    ) {
       score += 5 * weight
       continue
     }
@@ -131,6 +208,23 @@ export function scoreProduct(product, terms, primaryTerms = []) {
   }
 
   return score
+}
+
+function isStrongBrandQuery(query, brandHits) {
+  if (!brandHits.length) return false
+  const q = normalizeText(query)
+  if (!q || q.length < 2) return false
+  // Ingredient searches must stay broad (alternatives across brands)
+  if (isKnownIngredientQuery(q)) return false
+  const exact = brandHits.some(({ p }) => {
+    const b = normalizeText(p.brand || '')
+    if (!b) return false
+    if (b === q) return true
+    if (q.includes(' ') && b.startsWith(q)) return true
+    if (!q.includes(' ') && q.length >= 3 && b.startsWith(`${q} `)) return true
+    return false
+  })
+  return exact
 }
 
 /**
@@ -151,11 +245,28 @@ export function searchProducts(products, query, opts = {}) {
 
   if (!expanded.all.length) return pool
 
-  return pool
+  const scored = pool
     .map((p) => ({ p, score: scoreProduct(p, expanded.all, expanded.primary) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || a.p.title.localeCompare(b.p.title))
-    .map(({ p }) => p)
+
+  const qNorm = normalizeText(q)
+  const brandHits = scored.filter(({ p }) => {
+    const b = normalizeText(p.brand || '')
+    if (!b) return false
+    if (b === qNorm) return true
+    // Prefix of a longer brand name: "eva" → "eva skin clinic", "bath & body" → "…"
+    if (qNorm.includes(' ') && b.startsWith(qNorm)) return true
+    if (!qNorm.includes(' ') && qNorm.length >= 3 && b.startsWith(`${qNorm} `)) return true
+    return false
+  })
+
+  // When the query is clearly a brand/company name, don't flood with weak token matches
+  if (isStrongBrandQuery(q, brandHits)) {
+    return brandHits.map(({ p }) => p)
+  }
+
+  return scored.map(({ p }) => p)
 }
 
 /**

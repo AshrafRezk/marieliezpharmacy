@@ -288,6 +288,19 @@ export const STRINGS = {
     en: 'We couldn’t match that symptom to products yet. Try another word, or ask a pharmacist on WhatsApp.',
     ar: 'لسه مش لاقيين مطابقة للعرض ده. جرّب كلمة تانية، أو كلّم الصيدلي على واتساب.',
   },
+  'bot.emergencyTitle': {
+    en: 'This may need urgent care',
+    ar: 'ده ممكن يحتاج رعاية عاجلة',
+  },
+  'bot.emergencyBody': {
+    en: 'I’m not able to suggest products for this. If someone is having a seizure, chest pain, trouble breathing, or another emergency, call Egypt ambulance 123 now (or your local emergency number) and seek emergency care. WhatsApp is for pharmacy follow-up after the person is safe — not a substitute for emergency services.',
+    ar: 'مش هقدر أقترح منتجات للحالة دي. لو في نوبة صرع، ألم صدر، صعوبة تنفس، أو أي طارئ، اتصل بالإسعاف 123 فورًا (أو رقم الطوارئ المحلي) واطلب رعاية طارئة. واتساب للمتابعة مع الصيدلية بعد ما الشخص يبقى في أمان — مش بديل لخدمات الطوارئ.',
+  },
+  'bot.emergencyCall': { en: 'Call ambulance 123', ar: 'اتصل بالإسعاف 123' },
+  'bot.emergencyWa': {
+    en: 'WhatsApp pharmacist (after urgent care)',
+    ar: 'واتساب الصيدلي (بعد الرعاية العاجلة)',
+  },
   'bot.add': { en: 'Add', ar: 'ضيف' },
   'bot.viewAll': { en: 'Show in shop', ar: 'ورّيني في المتجر' },
   'bot.whatsapp': { en: 'Continue on WhatsApp', ar: 'كمّل على واتساب' },
@@ -346,9 +359,48 @@ export const STRINGS = {
   },
   'map.mapAria': { en: 'Map of pharmacy branches', ar: 'خريطة فروع الصيدلية' },
   'map.legendAria': { en: 'Map legend', ar: 'مفتاح الخريطة' },
+  'map.legendYou': { en: 'You', ar: 'موقعك' },
   'map.legendPharmacy': { en: 'Pharmacy', ar: 'صيدلية' },
   'map.legendHospital': { en: 'Hospital', ar: 'مستشفى' },
   'map.legendCompound': { en: 'Compound', ar: 'كمباوند' },
+  'map.locateAria': {
+    en: 'Show my location and route to the closest branch',
+    ar: 'اعرض موقعي والمسار لأقرب فرع',
+  },
+  'map.locateTitle': { en: 'My location', ar: 'موقعي' },
+  'map.routePending': {
+    en: 'Finding your location…',
+    ar: 'بنحدّد موقعك…',
+  },
+  'map.routeRouting': {
+    en: 'Drawing the fastest moto route…',
+    ar: 'بنرسم أسرع مسار موتوسيكل…',
+  },
+  'map.routeOk': {
+    en: 'Closest: {branch} · ~{distance} by moto · ~{eta} min typical delivery (non-rush estimate, not a guarantee)',
+    ar: 'أقرب فرع: {branch} · حوالي {distance} بالموتوسيكل · توصيل تقريبي ~{eta} دقيقة (وقت غير الذروة — تقدير مش ضمان)',
+  },
+  'map.routeOkApprox': {
+    en: 'Closest: {branch} · ~{distance} (approx.) · ~{eta} min typical delivery (non-rush estimate)',
+    ar: 'أقرب فرع: {branch} · حوالي {distance} (تقريبي) · توصيل تقريبي ~{eta} دقيقة (غير الذروة)',
+  },
+  'map.routeDenied': {
+    en: 'Location permission needed to show your pin and a delivery estimate. You can still tap any branch.',
+    ar: 'محتاجين إذن الموقع عشان نبيّن مكانك وتقدير التوصيل. تقدر برضه تضغط على أي فرع.',
+  },
+  'map.routeUnavailable': {
+    en: 'Couldn’t read your location right now. Try again with the locate button, or tap a branch.',
+    ar: 'مش قادرين نقرأ موقعك دلوقتي. جرّب زر الموقع تاني، أو اضغط على فرع.',
+  },
+  'map.routeInsecure': {
+    en: 'Location works on HTTPS (or localhost). Open the secure site to pin yourself on the map.',
+    ar: 'الموقع بيشتغل على HTTPS (أو localhost). افتح الموقع الآمن عشان نثبّت مكانك على الخريطة.',
+  },
+  'map.routeUnsupported': {
+    en: 'This browser can’t share location. Tap a branch below to explore the map.',
+    ar: 'المتصفح ده مش بيدعم الموقع. اضغط على فرع تحت عشان تستكشف الخريطة.',
+  },
+  'map.userMarkerTitle': { en: 'Your location', ar: 'موقعك' },
   'map.golfName': { en: 'Al Golf Branch', ar: 'فرع الجولف' },
   'map.golfAddr': {
     en: '23 Ahmed Tayseer St., Al Golf, Nasr City',

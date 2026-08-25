@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { compounds } from './data/compounds.js'
-import { getBranchPhones } from './config.js'
+import { findClosestBranch, getBranchPhones, haversineKm } from './config.js'
 import { phonesListHtml, renderBranchPhoneLists } from './phone-actions.js'
 import { getTheme, onThemeChange } from './theme.js'
 import { onLangChange, t } from './i18n.js'
@@ -38,8 +38,23 @@ const CONTEXT_BOUNDS_PAD = 0.36
 const FLY_PADDING = [52, 52]
 const FLY_DURATION_MS = 1400
 
+/** Free OSRM public demo — driving profile (best free road graph for Cairo delivery). */
+const OSRM_ROUTE_URL = 'https://router.project-osrm.org/route/v1/driving'
+/**
+ * Typical Cairo motorcycle delivery average outside rush hour / quiet order load
+ * (includes lights & compound gates — not peak Ring Road crawl).
+ */
+const MOTO_AVG_KMH = 24
+/** Pharmacy pick / pack buffer before the rider leaves. */
+const PREP_BUFFER_MIN = 5
+/** When OSRM is down, inflate great-circle toward typical road distance. */
+const HAVERSINE_ROAD_FACTOR = 1.35
+const GEO_OPTS = { enableHighAccuracy: true, timeout: 14000, maximumAge: 60000 }
+
 /** Bumps on each focus so stale moveend handlers do not open the wrong popup. */
 let focusGeneration = 0
+/** Cancels in-flight closest-route work when a newer locate starts. */
+let routeGeneration = 0
 
 const branches = [
   {
@@ -188,6 +203,92 @@ function ringCentroid(ring) {
 
 function mapsDirectionsUrl(lat, lng) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+}
+
+function formatRoadDistance(meters) {
+  if (!Number.isFinite(meters) || meters < 0) return '—'
+  if (meters < 1000) return `${Math.max(1, Math.round(meters))} m`
+  const km = meters / 1000
+  return `${km < 10 ? km.toFixed(1) : Math.round(km)} km`
+}
+
+/** Non-rush motorcycle delivery ETA from road metres + small prep buffer. */
+function estimateDeliveryMinutes(distanceM) {
+  const km = Math.max(0, distanceM) / 1000
+  const rideMin = (km / MOTO_AVG_KMH) * 60
+  return Math.max(PREP_BUFFER_MIN + 2, Math.round(PREP_BUFFER_MIN + rideMin))
+}
+
+function userLocationIcon() {
+  return L.divIcon({
+    className: 'map-marker-user',
+    html: `<span class="map-pin-user" aria-hidden="true">
+      <span class="map-pin-user-pulse"></span>
+      <span class="map-pin-user-dot"></span>
+    </span>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
+  })
+}
+
+/**
+ * Query OSRM for one origin→branch route. Returns null on failure.
+ * @returns {Promise<{ branch: typeof branches[number], distanceM: number, coordinates: [number, number][] } | null>}
+ */
+async function fetchOsrmToBranch(origin, branch) {
+  const url =
+    `${OSRM_ROUTE_URL}/` +
+    `${origin.lng},${origin.lat};${branch.lng},${branch.lat}` +
+    `?overview=full&geometries=geojson`
+
+  const res = await fetch(url)
+  if (!res.ok) return null
+  const data = await res.json()
+  const route = data?.routes?.[0]
+  if (!route || !Number.isFinite(route.distance)) return null
+
+  const coords = route.geometry?.coordinates
+  if (!Array.isArray(coords) || coords.length < 2) return null
+
+  return {
+    branch,
+    distanceM: route.distance,
+    // GeoJSON is [lng, lat] → Leaflet wants [lat, lng]
+    coordinates: coords.map(([lng, lat]) => [lat, lng]),
+  }
+}
+
+/**
+ * Closest branch by OSRM road distance when available; otherwise great-circle.
+ * @returns {Promise<{ branch: typeof branches[number], distanceM: number, coordinates: [number, number][] | null, fromRouting: boolean } | null>}
+ */
+async function resolveClosestRoute(origin) {
+  const results = await Promise.all(
+    branches.map((branch) =>
+      fetchOsrmToBranch(origin, branch).catch(() => null),
+    ),
+  )
+  const ok = results.filter(Boolean)
+  if (ok.length) {
+    ok.sort((a, b) => a.distanceM - b.distanceM)
+    return { ...ok[0], fromRouting: true }
+  }
+
+  const closest = findClosestBranch(origin.lat, origin.lng)
+  if (!closest) return null
+  const branch = branches.find((b) => b.id === closest.id)
+  if (!branch) return null
+  const distanceM = haversineKm(origin.lat, origin.lng, branch.lat, branch.lng) * 1000 * HAVERSINE_ROAD_FACTOR
+  return {
+    branch,
+    distanceM,
+    coordinates: [
+      [origin.lat, origin.lng],
+      [branch.lat, branch.lng],
+    ],
+    fromRouting: false,
+  }
 }
 
 function pharmacyPopup(branch) {
@@ -364,12 +465,6 @@ export function initPharmacyMap(container) {
   /** @type {import('leaflet').Polygon[]} */
   const compoundLayers = []
 
-  onThemeChange((theme) => {
-    tiles.setUrl(tileUrlForTheme(theme))
-    const style = compoundStyleForTheme(theme)
-    compoundLayers.forEach((layer) => layer.setStyle(style))
-  })
-
   // Default camera frames all pharmacy branches so pins stay readable.
   // Compounds/hospitals still render for context when the user pans or zooms out.
   const branchBounds = L.latLngBounds(branches.map((b) => [b.lat, b.lng]))
@@ -459,7 +554,6 @@ export function initPharmacyMap(container) {
       if (wasOpen) marker.openPopup()
     })
   }
-  onLangChange(refreshPharmacyI18n)
 
   map.fitBounds(branchBounds.pad(0.42))
 
@@ -485,6 +579,211 @@ export function initPharmacyMap(container) {
   }
 
   wireBranchList(map, markersById)
+
+  // --- User location + closest-branch moto route (OSRM) ---
+  const routeBanner = container.closest('.map-frame')?.querySelector('[data-map-route-banner]')
+
+  const setRouteBanner = (message, { error = false } = {}) => {
+    if (!routeBanner) return
+    if (!message) {
+      routeBanner.hidden = true
+      routeBanner.textContent = ''
+      routeBanner.classList.remove('is-error')
+      return
+    }
+    routeBanner.hidden = false
+    routeBanner.textContent = message
+    routeBanner.classList.toggle('is-error', error)
+  }
+
+  if (!map.getPane('userPane')) {
+    map.createPane('userPane')
+    map.getPane('userPane').style.zIndex = 660
+  }
+
+  /** @type {import('leaflet').Marker | null} */
+  let userMarker = null
+  /** @type {import('leaflet').Polyline | null} */
+  let routeLine = null
+  /** @type {{ lat: number, lng: number } | null} */
+  let lastUserPos = null
+  /** @type {{ branchId: string, distanceM: number, fromRouting: boolean } | null} */
+  let lastRouteMeta = null
+
+  const clearRouteLine = () => {
+    if (routeLine) {
+      map.removeLayer(routeLine)
+      routeLine = null
+    }
+  }
+
+  const refreshRouteBannerI18n = () => {
+    if (!lastRouteMeta || !lastUserPos) return
+    const branch = branches.find((b) => b.id === lastRouteMeta.branchId)
+    if (!branch) return
+    const key = lastRouteMeta.fromRouting ? 'map.routeOk' : 'map.routeOkApprox'
+    setRouteBanner(
+      t(key, {
+        branch: branchName(branch),
+        distance: formatRoadDistance(lastRouteMeta.distanceM),
+        eta: String(estimateDeliveryMinutes(lastRouteMeta.distanceM)),
+      }),
+    )
+  }
+
+  const drawClosestRoute = async (lat, lng) => {
+    const gen = ++routeGeneration
+    lastUserPos = { lat, lng }
+    setRouteBanner(t('map.routeRouting'))
+
+    if (!userMarker) {
+      userMarker = L.marker([lat, lng], {
+        icon: userLocationIcon(),
+        pane: 'userPane',
+        zIndexOffset: 1200,
+        keyboard: false,
+        title: t('map.userMarkerTitle'),
+      }).addTo(map)
+    } else {
+      userMarker.setLatLng([lat, lng])
+      userMarker.options.title = t('map.userMarkerTitle')
+    }
+
+    const resolved = await resolveClosestRoute({ lat, lng })
+    if (gen !== routeGeneration) return
+
+    clearRouteLine()
+
+    if (!resolved) {
+      lastRouteMeta = null
+      setRouteBanner(t('map.routeUnavailable'), { error: true })
+      return
+    }
+
+    lastRouteMeta = {
+      branchId: resolved.branch.id,
+      distanceM: resolved.distanceM,
+      fromRouting: resolved.fromRouting,
+    }
+
+    const lineColor =
+      getTheme() === 'light' ? 'rgba(15, 118, 110, 0.85)' : 'rgba(61, 214, 195, 0.9)'
+
+    routeLine = L.polyline(resolved.coordinates, {
+      color: lineColor,
+      weight: 4.5,
+      opacity: 0.92,
+      lineJoin: 'round',
+      lineCap: 'round',
+      dashArray: resolved.fromRouting ? null : '8 10',
+      className: 'map-route-line',
+    }).addTo(map)
+
+    const branchMarker = markersById.get(resolved.branch.id)
+    setActiveBranch(resolved.branch.id)
+    refreshRouteBannerI18n()
+
+    const bounds = L.latLngBounds(resolved.coordinates)
+    bounds.extend([lat, lng])
+    bounds.extend([resolved.branch.lat, resolved.branch.lng])
+    map.flyToBounds(bounds.pad(0.22), {
+      padding: [56, 56],
+      maxZoom: 15,
+      animate: !reduceMotion(),
+      duration: reduceMotion() ? 0 : 1.15,
+    })
+
+    if (branchMarker) {
+      const openGen = ++focusGeneration
+      const openPopup = () => {
+        if (openGen !== focusGeneration) return
+        branchMarker.openPopup()
+      }
+      if (reduceMotion()) openPopup()
+      else map.once('moveend', openPopup)
+    }
+  }
+
+  const requestUserLocation = () => {
+    if (!window.isSecureContext) {
+      setRouteBanner(t('map.routeInsecure'), { error: true })
+      return
+    }
+    if (!navigator.geolocation) {
+      setRouteBanner(t('map.routeUnsupported'), { error: true })
+      return
+    }
+
+    setRouteBanner(t('map.routePending'))
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        drawClosestRoute(pos.coords.latitude, pos.coords.longitude).catch(() => {
+          setRouteBanner(t('map.routeUnavailable'), { error: true })
+        })
+      },
+      (err) => {
+        const denied = err && (err.code === 1 || err.code === err.PERMISSION_DENIED)
+        setRouteBanner(t(denied ? 'map.routeDenied' : 'map.routeUnavailable'), {
+          error: true,
+        })
+      },
+      GEO_OPTS,
+    )
+  }
+
+  const LocateControl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const wrap = L.DomUtil.create('div', 'leaflet-bar map-locate-control')
+      const btn = L.DomUtil.create('a', 'map-locate-btn', wrap)
+      btn.href = '#'
+      btn.role = 'button'
+      btn.title = t('map.locateTitle')
+      btn.setAttribute('aria-label', t('map.locateAria'))
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-6a1 1 0 0 1 1 1v1.06A8.004 8.004 0 0 1 20.94 11H22a1 1 0 1 1 0 2h-1.06A8.004 8.004 0 0 1 13 20.94V22a1 1 0 1 1-2 0v-1.06A8.004 8.004 0 0 1 3.06 13H2a1 1 0 1 1 0-2h1.06A8.004 8.004 0 0 1 11 3.06V2a1 1 0 0 1 1-1Zm0 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg>'
+      L.DomEvent.disableClickPropagation(wrap)
+      L.DomEvent.on(btn, 'click', (event) => {
+        L.DomEvent.preventDefault(event)
+        requestUserLocation()
+      })
+      this._btn = btn
+      return wrap
+    },
+  })
+
+  const locateControl = new LocateControl()
+  locateControl.addTo(map)
+
+  const refreshLocateI18n = () => {
+    const btn = locateControl._btn
+    if (btn) {
+      btn.title = t('map.locateTitle')
+      btn.setAttribute('aria-label', t('map.locateAria'))
+    }
+    if (userMarker) userMarker.options.title = t('map.userMarkerTitle')
+    if (lastRouteMeta) refreshRouteBannerI18n()
+  }
+
+  onLangChange(() => {
+    refreshPharmacyI18n()
+    refreshLocateI18n()
+  })
+
+  onThemeChange((theme) => {
+    tiles.setUrl(tileUrlForTheme(theme))
+    const style = compoundStyleForTheme(theme)
+    compoundLayers.forEach((layer) => layer.setStyle(style))
+    if (routeLine) {
+      routeLine.setStyle({
+        color:
+          theme === 'light' ? 'rgba(15, 118, 110, 0.85)' : 'rgba(61, 214, 195, 0.9)',
+      })
+    }
+  })
+
+  // Auto-locate once the map is ready (permission prompt when allowed).
+  requestUserLocation()
 
   // Touch-friendly: enable scroll zoom after focus / interaction
   const enableWheel = () => map.scrollWheelZoom.enable()

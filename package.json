@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "scrape:talabat": "node scripts/scrape-talabat.mjs"
+    "scrape:talabat": "node scripts/scrape-talabat.mjs",
+    "enrich:products": "node scripts/enrich-products.mjs"
   },
   "devDependencies": {
     "vite": "^6.3.5",
