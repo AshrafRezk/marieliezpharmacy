@@ -26,7 +26,7 @@ export function phoneRowHtml(phone, { linkAttr = '' } = {}) {
   const wa = phone.supportsWhatsApp
     ? `<a class="phone-btn phone-btn-wa" href="${phone.whatsappUrl}" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(t('phone.waAria', { phone: phone.display }))}"${extra}>${WA_ICON}</a>`
     : ''
-  return `<span class="phone-row"><span class="phone-row-num">${escapeAttr(phone.display)}</span>${call}${wa}</span>`
+  return `<span class="phone-row"><span class="phone-row-num">${escapeAttr(phone.display)}</span><span class="phone-row-actions">${call}${wa}</span></span>`
 }
 
 /** @param {ReturnType<typeof getBranchPhones>} phones */

@@ -306,9 +306,13 @@ async function resolveClosestRoute(origin) {
 function mapPopupOptions(map, extras = {}) {
   const size = map.getSize()
   const edgePad = Math.max(14, Math.min(24, Math.round(size.x * 0.04)))
+  // Floor width so phone + Call/WA icons stay on one row (~20–22rem on phones).
+  const avail = Math.max(240, size.x - edgePad * 2)
+  const maxWidth = Math.min(352, avail)
+  const minWidth = Math.min(maxWidth, Math.max(280, Math.min(320, avail)))
   return {
-    maxWidth: Math.min(300, Math.max(196, size.x - edgePad * 2)),
-    minWidth: 160,
+    maxWidth,
+    minWidth,
     autoPan: true,
     keepInView: true,
     autoPanPaddingTopLeft: L.point(56, 18),
@@ -565,8 +569,14 @@ export function initPharmacyMap(container) {
       const popup = marker.getPopup()
       if (!popup) return
       const next = mapPopupOptions(map, { offset: L.point(0, -4) })
-      if (popup.options.maxWidth === next.maxWidth) return
+      if (
+        popup.options.maxWidth === next.maxWidth &&
+        popup.options.minWidth === next.minWidth
+      ) {
+        return
+      }
       popup.options.maxWidth = next.maxWidth
+      popup.options.minWidth = next.minWidth
       popup.options.autoPanPaddingTopLeft = next.autoPanPaddingTopLeft
       popup.options.autoPanPaddingBottomRight = next.autoPanPaddingBottomRight
       popup.update()
