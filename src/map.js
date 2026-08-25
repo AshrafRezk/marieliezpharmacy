@@ -306,10 +306,10 @@ async function resolveClosestRoute(origin) {
 function mapPopupOptions(map, extras = {}) {
   const size = map.getSize()
   const edgePad = Math.max(14, Math.min(24, Math.round(size.x * 0.04)))
-  // Floor width so phone + Call/WA icons stay on one row (~20–22rem on phones).
-  const avail = Math.max(240, size.x - edgePad * 2)
-  const maxWidth = Math.min(352, avail)
-  const minWidth = Math.min(maxWidth, Math.max(280, Math.min(320, avail)))
+  // Compact icon-toolbar popups — keep under ~16–18rem on phones.
+  const avail = Math.max(200, size.x - edgePad * 2)
+  const maxWidth = Math.min(280, avail)
+  const minWidth = Math.min(maxWidth, Math.max(200, Math.min(240, avail)))
   return {
     maxWidth,
     minWidth,
@@ -321,18 +321,25 @@ function mapPopupOptions(map, extras = {}) {
   }
 }
 
+/** Google Maps / navigate pin — used as compact icon button in pharmacy popups. */
+const NAVIGATE_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>`
+
 function pharmacyPopup(branch) {
   const navigateUrl = mapsDirectionsUrl(branch.lat, branch.lng)
   const phones = getBranchPhones(branch.id)
-  const phoneLines = phonesListHtml(phones)
+  const phoneIcons = phonesListHtml(phones, { iconsOnly: true })
+  const navLabel = String(t('map.navigate'))
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
   return `
-    <div class="map-popup">
+    <div class="map-popup map-popup--compact">
       <strong>${t('brand.wordmark')}</strong>
       <p class="map-popup-branch">${branchName(branch)}</p>
-      <p>${branchAddress(branch)}</p>
-      ${phoneLines ? `<p class="map-popup-phones">${phoneLines}</p>` : ''}
-      <div class="map-popup-actions">
-        <a class="map-popup-navigate" href="${navigateUrl}" target="_blank" rel="noopener noreferrer">${t('map.navigate')}</a>
+      <p class="map-popup-addr">${branchAddress(branch)}</p>
+      <div class="map-popup-toolbar">
+        ${phoneIcons}
+        <a class="map-popup-navigate" href="${navigateUrl}" target="_blank" rel="noopener noreferrer" aria-label="${navLabel}" title="${navLabel}">${NAVIGATE_ICON}</a>
       </div>
     </div>
   `
@@ -595,7 +602,10 @@ export function initPharmacyMap(container) {
       marker.setIcon(pharmacyIcon(b))
       marker.setPopupContent(pharmacyPopup(b))
       marker.options.title = `${t('brand.wordmark')}: ${branchName(b)}`
-      if (wasOpen) marker.openPopup()
+      if (wasOpen) {
+        marker.getElement()?.classList.add('is-popup-open')
+        marker.openPopup()
+      }
     })
   }
 

@@ -17,23 +17,30 @@ function escapeAttr(value) {
 /**
  * One number with Call (+ WhatsApp when not a landline).
  * @param {{ display: string, tel: string, whatsappUrl: string, supportsWhatsApp?: boolean }} phone
- * @param {{ linkAttr?: string }} [opts]
+ * @param {{ linkAttr?: string, iconsOnly?: boolean }} [opts]
  */
-export function phoneRowHtml(phone, { linkAttr = '' } = {}) {
+export function phoneRowHtml(phone, { linkAttr = '', iconsOnly = false } = {}) {
   const extra = linkAttr ? ` ${linkAttr}` : ''
   const callAria = escapeAttr(t('phone.callAria', { phone: phone.display }))
-  const call = `<a class="phone-btn phone-btn-call" href="${phone.tel}" aria-label="${callAria}"${extra}>${CALL_ICON}</a>`
+  const call = `<a class="phone-btn phone-btn-call" href="${phone.tel}" aria-label="${callAria}" title="${callAria}"${extra}>${CALL_ICON}</a>`
   const wa = phone.supportsWhatsApp
-    ? `<a class="phone-btn phone-btn-wa" href="${phone.whatsappUrl}" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(t('phone.waAria', { phone: phone.display }))}"${extra}>${WA_ICON}</a>`
+    ? (() => {
+        const waAria = escapeAttr(t('phone.waAria', { phone: phone.display }))
+        return `<a class="phone-btn phone-btn-wa" href="${phone.whatsappUrl}" target="_blank" rel="noopener noreferrer" aria-label="${waAria}" title="${waAria}"${extra}>${WA_ICON}</a>`
+      })()
     : ''
+  if (iconsOnly) {
+    return `<span class="phone-row phone-row--icons">${call}${wa}</span>`
+  }
   return `<span class="phone-row"><span class="phone-row-num">${escapeAttr(phone.display)}</span><span class="phone-row-actions">${call}${wa}</span></span>`
 }
 
 /** @param {ReturnType<typeof getBranchPhones>} phones */
 export function phonesListHtml(phones, opts = {}) {
-  return phones
-    .map((p) => phoneRowHtml(p, opts))
-    .join('<span class="phone-row-sep" aria-hidden="true">·</span>')
+  const sep = opts.iconsOnly
+    ? ''
+    : '<span class="phone-row-sep" aria-hidden="true">·</span>'
+  return phones.map((p) => phoneRowHtml(p, opts)).join(sep)
 }
 
 /**
