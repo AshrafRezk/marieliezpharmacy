@@ -141,7 +141,14 @@ export const STRINGS = {
   },
   'cart.each': { en: 'each', ar: 'للقطعة' },
   'cart.qty': { en: 'Quantity', ar: 'الكمية' },
-  'cart.total': { en: 'Approx. total', ar: 'الإجمالي التقريبي' },
+  'cart.total': {
+    en: 'Approx. items (excl. tax & delivery)',
+    ar: 'إجمالي المنتجات التقريبي (بدون ضريبة وتوصيل)',
+  },
+  'cart.totalPartial': {
+    en: 'Some items have no listed price and aren’t included in this total.',
+    ar: 'بعض المنتجات مفيش ليها سعر ظاهر ومش محسوبة في الإجمالي ده.',
+  },
   'cart.checkout': { en: 'Continue to delivery', ar: 'كمّل لبيانات التوصيل' },
   'cart.openAria': { en: 'Open cart', ar: 'فتح السلة' },
   'cart.orderHello': {
@@ -164,7 +171,10 @@ export const STRINGS = {
     en: 'I would like pharmacist advice / products for the symptoms above.',
     ar: 'عايز استشارة صيدلي / منتجات للأعراض اللي فوق.',
   },
-  'cart.orderTotal': { en: 'Approx. total:', ar: 'الإجمالي التقريبي:' },
+  'cart.orderTotal': {
+    en: 'Approx. items (excl. tax & delivery):',
+    ar: 'إجمالي المنتجات التقريبي (بدون ضريبة وتوصيل):',
+  },
   'cart.orderAddressIntro': {
     en: 'My delivery details:',
     ar: 'بيانات التوصيل بتاعتي:',

@@ -76,8 +76,24 @@ function cartLines() {
     .filter(Boolean)
 }
 
+/** Unit × qty when the catalog price is a finite number; otherwise null. */
+function lineAmount(product, qty) {
+  if (product?.price == null || product.price === '') return null
+  const unit = Number(product.price)
+  if (!Number.isFinite(unit) || qty < 1) return null
+  return unit * qty
+}
+
+/** Sum of priced line items only — excludes tax and delivery. */
 function cartTotal() {
-  return cartLines().reduce((sum, { product, qty }) => sum + product.price * qty, 0)
+  return cartLines().reduce((sum, { product, qty }) => {
+    const amount = lineAmount(product, qty)
+    return amount == null ? sum : sum + amount
+  }, 0)
+}
+
+function cartHasUnpricedItems() {
+  return cartLines().some(({ product, qty }) => lineAmount(product, qty) == null)
 }
 
 function filteredProducts() {
@@ -113,10 +129,10 @@ function orderBranchId() {
 function buildOrderMessage() {
   readDeliveryFields()
   const lines = cartLines()
-  const rows = lines.map(
-    ({ product, qty }) =>
-      `• ${qty}× ${product.title}: ${formatPrice(product.price * qty)}`,
-  )
+  const rows = lines.map(({ product, qty }) => {
+    const amount = lineAmount(product, qty)
+    return `• ${qty}× ${product.title}: ${formatPrice(amount)}`
+  })
   const intent = symptomBot?.getCustomerIntent?.() || { feelings: [], turns: [] }
   const feelings = intent.feelings || []
   const parts = [t('cart.orderHello'), '']
@@ -141,6 +157,7 @@ function buildOrderMessage() {
     parts.push(...rows)
     parts.push('')
     parts.push(`${t('cart.orderTotal')} ${formatPrice(cartTotal())}`)
+    if (cartHasUnpricedItems()) parts.push(t('cart.totalPartial'))
     parts.push('')
   } else if (feelings.length || userTurns.length) {
     parts.push(t('cart.orderAdvice'))
@@ -340,7 +357,7 @@ function renderCartDrawer() {
   } else if (state.checkoutStep === 'cart') {
     body.innerHTML = lines
       .map(({ product, qty }) => {
-        const line = product.price * qty
+        const amount = lineAmount(product, qty)
         return `
           <div class="cart-line" data-product-id="${escapeHtml(product.id)}">
             <div class="cart-line-info">
@@ -353,31 +370,41 @@ function renderCartDrawer() {
                 <span class="shop-qty-value">${qty}</span>
                 <button type="button" class="shop-qty-btn" data-action="inc" aria-label="${escapeHtml(t('shop.inc'))}">+</button>
               </div>
-              <span class="cart-line-price">${escapeHtml(formatPrice(line))}</span>
+              <span class="cart-line-price">${escapeHtml(formatPrice(amount))}</span>
             </div>
           </div>`
       })
       .join('')
   } else {
+    const partialNote = cartHasUnpricedItems()
+      ? `<p class="price-disclaimer" role="note">${escapeHtml(t('cart.totalPartial'))}</p>`
+      : ''
     body.innerHTML = `
       <div class="cart-delivery-summary">
         <p class="cart-delivery-summary-label">${escapeHtml(t('cart.orderSummary'))}</p>
         <ul>
           ${lines
-            .map(
-              ({ product, qty }) =>
-                `<li><span>${escapeHtml(`${qty}× ${product.title}`)}</span><strong>${escapeHtml(formatPrice(product.price * qty))}</strong></li>`,
-            )
+            .map(({ product, qty }) => {
+              const amount = lineAmount(product, qty)
+              return `<li><span>${escapeHtml(`${qty}× ${product.title}`)}</span><strong>${escapeHtml(formatPrice(amount))}</strong></li>`
+            })
             .join('')}
         </ul>
         <p class="cart-delivery-summary-total">
           <span>${escapeHtml(t('cart.total'))}</span>
           <strong>${escapeHtml(formatPrice(cartTotal()))}</strong>
         </p>
+        ${partialNote}
       </div>`
   }
 
   if (totalEl) totalEl.textContent = formatPrice(cartTotal())
+  const partialEl = document.querySelector('[data-cart-total-partial]')
+  if (partialEl) {
+    const showPartial = lines.length > 0 && cartHasUnpricedItems()
+    partialEl.hidden = !showPartial
+    if (showPartial) partialEl.textContent = t('cart.totalPartial')
+  }
   if (checkout) {
     checkout.disabled = lines.length === 0
     checkout.setAttribute('aria-disabled', lines.length === 0 ? 'true' : 'false')

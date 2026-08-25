@@ -2501,9 +2501,16 @@ html[data-theme="light"] .bot-nudge {
   font-size: 0.95rem;
 }
 
+.cart-total-row span {
+  flex: 1 1 auto;
+  line-height: 1.35;
+}
+
 .cart-total-row strong {
+  flex: 0 0 auto;
   font-size: 1.1rem;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .cart-footer .btn {
@@ -2650,6 +2657,16 @@ html[data-theme="light"] .bot-nudge {
   padding-top: var(--space-3);
   border-top: 1px solid var(--md-sys-color-outline-variant);
   font-size: 0.92rem;
+}
+
+.cart-delivery-summary-total span {
+  flex: 1 1 auto;
+  line-height: 1.35;
+}
+
+.cart-delivery-summary-total strong {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .cart-intent-list {
