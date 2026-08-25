@@ -1297,6 +1297,60 @@
       </div>
     </div>
 
+    <div
+      class="location-help-overlay"
+      data-location-help
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="location-help-title"
+    >
+      <button
+        type="button"
+        class="location-help-backdrop"
+        data-location-help-close
+        data-i18n-aria="locationHelp.dismissAria"
+        aria-label="Close location help"
+      ></button>
+      <div class="location-help-card">
+        <h2 id="location-help-title" class="location-help-title" data-location-help-title data-i18n="locationHelp.title">
+          Enable location to continue
+        </h2>
+        <p class="location-help-body" data-location-help-body data-i18n="locationHelp.bodyPrompt">
+          We need location permission to pin your delivery spot. Tap Allow when your browser asks, then try again.
+        </p>
+        <div class="location-help-howto" data-location-help-howto hidden>
+          <p class="location-help-howto-intro" data-i18n="locationHelp.howtoIntro">Quick how-to:</p>
+          <ul class="location-help-howto-list">
+            <li data-i18n="locationHelp.howtoChrome">
+              Chrome: lock icon in the address bar → Site settings → Location → Allow.
+            </li>
+            <li data-i18n="locationHelp.howtoSafari">
+              Safari (Mac): Safari → Settings → Websites → Location → Allow for this site.
+            </li>
+            <li data-i18n="locationHelp.howtoMobile">
+              Phone: site settings (or app info) → Location → Allow / Ask.
+            </li>
+          </ul>
+        </div>
+        <p
+          class="location-help-fallback"
+          data-location-help-fallback
+          data-i18n="locationHelp.fallbackCart"
+        >
+          You can still type your name and address — we’ll use our primary WhatsApp.
+        </p>
+        <div class="location-help-actions">
+          <button type="button" class="text-btn" data-location-help-dismiss>
+            <span data-location-help-dismiss-label data-i18n="locationHelp.dismiss">Not now</span>
+          </button>
+          <button type="button" class="btn btn-filled" data-location-help-retry>
+            <span data-location-help-retry-label data-i18n="locationHelp.retry">Allow location</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

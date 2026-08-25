@@ -3788,6 +3788,148 @@ html[data-theme="light"] .bot-panel {
   }
 }
 
+/* -- Location permission help modal -- */
+html.location-help-open {
+  overflow: hidden;
+}
+
+.location-help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s var(--ease-out);
+}
+
+.location-help-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.location-help-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--md-sys-color-surface-dim) 72%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.location-help-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(22rem, 100%);
+  max-height: min(88dvh, 36rem);
+  padding: var(--space-5);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 94%, transparent);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 0 0 1px var(--glass-edge),
+    0 0 36px color-mix(in srgb, var(--accent) 16%, transparent);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.35s var(--ease-spring);
+}
+
+.location-help-overlay.is-open .location-help-card {
+  transform: none;
+}
+
+.location-help-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.5vw, 1.45rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--md-sys-color-on-surface);
+}
+
+.location-help-body,
+.location-help-fallback {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.location-help-howto {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 10%, var(--md-sys-color-surface-container));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.location-help-howto-intro {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+html[data-theme='dark'] .location-help-howto-intro,
+html:not([data-theme]) .location-help-howto-intro {
+  color: var(--accent-soft);
+}
+
+.location-help-howto-list {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.location-help-howto-list li + li {
+  margin-top: 0.4rem;
+}
+
+.location-help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.location-help-actions .btn {
+  flex: 1 1 9rem;
+}
+
+.location-help-actions .text-btn {
+  flex: 0 1 auto;
+  align-self: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-help-overlay,
+  .location-help-card {
+    transition: none;
+  }
+
+  .location-help-overlay.is-open .location-help-card {
+    transform: none;
+  }
+}
+
 /* -- Welcome owners video overlay -- */
 html.welcome-open {
   overflow: hidden;

@@ -7,6 +7,13 @@ import {
   mapsLocationUrl,
 } from './config.js'
 import { categoryLabel, getLang, onLangChange, t } from './i18n.js'
+import {
+  getGeolocationPermissionState,
+  isLocationHelpOpen,
+  isPermissionDeniedError,
+  openLocationHelpModal,
+  offerLocationRetry,
+} from './location-permission.js'
 import { searchProducts } from './search.js'
 import { initSymptomBot } from './symptom-bot.js'
 
@@ -322,7 +329,10 @@ function setCheckoutStep(step) {
 function enterDeliveryStep() {
   setCheckoutStep('delivery')
   renderCartDrawer()
-  if (state.delivery.lat == null) requestLocation({ silentUnsupported: true })
+  if (state.delivery.lat == null) {
+    // Quiet attempt — modal only when the user taps “Use my location”.
+    requestLocation({ silentUnsupported: true, offerHelp: false })
+  }
   window.setTimeout(() => {
     document.querySelector('[data-cart-name]')?.focus()
   }, 80)
@@ -485,11 +495,24 @@ function refreshLocateStatus() {
   }
 }
 
-function requestLocation({ silentUnsupported = false } = {}) {
+async function requestLocation({ silentUnsupported = false, offerHelp = true } = {}) {
   if (!navigator.geolocation) {
     if (!silentUnsupported) setLocateStatus(t('cart.locateUnsupported'), true)
     return
   }
+
+  if (offerHelp) {
+    const perm = await getGeolocationPermissionState()
+    if (perm === 'denied') {
+      setLocateStatus(t('cart.locateDenied'), true)
+      await openLocationHelpModal({
+        context: 'cart',
+        onRetry: () => requestLocation(),
+      })
+      return
+    }
+  }
+
   setLocateStatus(t('cart.locatePending'))
   navigator.geolocation.getCurrentPosition(
     (pos) => {
@@ -497,8 +520,14 @@ function requestLocation({ silentUnsupported = false } = {}) {
       state.delivery.lng = pos.coords.longitude
       refreshLocateStatus()
     },
-    () => {
+    (err) => {
       setLocateStatus(t('cart.locateDenied'), true)
+      if (offerHelp && isPermissionDeniedError(err)) {
+        offerLocationRetry(err, {
+          context: 'cart',
+          onRetry: () => requestLocation(),
+        })
+      }
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 },
   )
@@ -651,7 +680,7 @@ function wireCart() {
   document.querySelector('[data-cart-whatsapp]')?.addEventListener('click', sendOrderOnWhatsApp)
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !symptomBot?.isOpen?.()) closeCart()
+    if (event.key === 'Escape' && !symptomBot?.isOpen?.() && !isLocationHelpOpen()) closeCart()
   })
 }
 

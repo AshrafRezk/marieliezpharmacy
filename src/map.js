@@ -5,6 +5,12 @@ import { findClosestBranch, getBranchPhones, haversineKm } from './config.js'
 import { phonesListHtml, renderBranchPhoneLists } from './phone-actions.js'
 import { getTheme, onThemeChange } from './theme.js'
 import { onLangChange, t } from './i18n.js'
+import {
+  getGeolocationPermissionState,
+  isPermissionDeniedError,
+  offerLocationRetry,
+  openLocationHelpModal,
+} from './location-permission.js'
 
 /**
  * Branch coordinates
@@ -704,7 +710,7 @@ export function initPharmacyMap(container) {
     }
   }
 
-  const requestUserLocation = () => {
+  const requestUserLocation = ({ offerHelp = true } = {}) => {
     if (!window.isSecureContext) {
       setRouteBanner(t('map.routeInsecure'), { error: true })
       return
@@ -714,21 +720,46 @@ export function initPharmacyMap(container) {
       return
     }
 
-    setRouteBanner(t('map.routePending'))
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        drawClosestRoute(pos.coords.latitude, pos.coords.longitude).catch(() => {
-          setRouteBanner(t('map.routeUnavailable'), { error: true })
+    const runGeo = () => {
+      setRouteBanner(t('map.routePending'))
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          drawClosestRoute(pos.coords.latitude, pos.coords.longitude).catch(() => {
+            setRouteBanner(t('map.routeUnavailable'), { error: true })
+          })
+        },
+        (err) => {
+          const denied = isPermissionDeniedError(err)
+          setRouteBanner(t(denied ? 'map.routeDenied' : 'map.routeUnavailable'), {
+            error: true,
+          })
+          if (denied && offerHelp) {
+            offerLocationRetry(err, {
+              context: 'map',
+              onRetry: () => requestUserLocation(),
+            })
+          }
+        },
+        GEO_OPTS,
+      )
+    }
+
+    if (!offerHelp) {
+      runGeo()
+      return
+    }
+
+    getGeolocationPermissionState().then((perm) => {
+      if (perm === 'denied') {
+        setRouteBanner(t('map.routeDenied'), { error: true })
+        openLocationHelpModal({
+          context: 'map',
+          onRetry: () => requestUserLocation(),
         })
-      },
-      (err) => {
-        const denied = err && (err.code === 1 || err.code === err.PERMISSION_DENIED)
-        setRouteBanner(t(denied ? 'map.routeDenied' : 'map.routeUnavailable'), {
-          error: true,
-        })
-      },
-      GEO_OPTS,
-    )
+        return
+      }
+      runGeo()
+    })
   }
 
   const LocateControl = L.Control.extend({
@@ -783,7 +814,8 @@ export function initPharmacyMap(container) {
   })
 
   // Auto-locate once the map is ready (permission prompt when allowed).
-  requestUserLocation()
+  // Skip the help modal on this silent attempt — show it only when the user taps locate.
+  requestUserLocation({ offerHelp: false })
 
   // Touch-friendly: enable scroll zoom after focus / interaction
   const enableWheel = () => map.scrollWheelZoom.enable()

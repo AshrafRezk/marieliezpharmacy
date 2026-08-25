@@ -224,6 +224,50 @@ export const STRINGS = {
     en: 'Location isn’t available on this device. Please type your name and address.',
     ar: 'الموقع مش متاح على الجهاز ده. اكتب الاسم والعنوان من فضلك.',
   },
+
+  'locationHelp.title': {
+    en: 'Enable location to continue',
+    ar: 'فعّل الموقع عشان نكمّل',
+  },
+  'locationHelp.bodyPrompt': {
+    en: 'We need location permission to pin your delivery spot. Tap Allow when your browser asks, then try again.',
+    ar: 'محتاجين إذن الموقع عشان نثبّت مكان التوصيل. اضغط Allow لما المتصفح يسأل، وبعدين جرّب تاني.',
+  },
+  'locationHelp.bodyBlocked': {
+    en: 'Location is blocked for this site in your browser. Re-enable it in settings, then try again.',
+    ar: 'الموقع مقفول لهذا الموقع في المتصفح. فعّله من الإعدادات، وبعدين جرّب تاني.',
+  },
+  'locationHelp.howtoIntro': {
+    en: 'Quick how-to:',
+    ar: 'باختصار:',
+  },
+  'locationHelp.howtoChrome': {
+    en: 'Chrome: lock icon in the address bar → Site settings → Location → Allow.',
+    ar: 'Chrome: أيقونة القفل في شريط العنوان ← إعدادات الموقع ← الموقع ← السماح.',
+  },
+  'locationHelp.howtoSafari': {
+    en: 'Safari (Mac): Safari → Settings → Websites → Location → Allow for this site.',
+    ar: 'Safari (Mac): Safari ← الإعدادات ← مواقع الويب ← الموقع ← السماح لهذا الموقع.',
+  },
+  'locationHelp.howtoMobile': {
+    en: 'Phone: site settings (or app info) → Location → Allow / Ask.',
+    ar: 'الموبايل: إعدادات الموقع (أو معلومات التطبيق) ← الموقع ← السماح / اسأل.',
+  },
+  'locationHelp.fallbackCart': {
+    en: 'You can still type your name and address — we’ll use our primary WhatsApp.',
+    ar: 'تقدر برضه تكتب الاسم والعنوان — هنستخدم واتساب الفرع الرئيسي.',
+  },
+  'locationHelp.fallbackMap': {
+    en: 'You can still tap any branch on the map.',
+    ar: 'تقدر برضه تضغط على أي فرع على الخريطة.',
+  },
+  'locationHelp.retry': { en: 'Allow location', ar: 'اسمح بالموقع' },
+  'locationHelp.retryAfter': { en: 'Try again', ar: 'جرّب تاني' },
+  'locationHelp.dismiss': { en: 'Not now', ar: 'مش دلوقتي' },
+  'locationHelp.dismissAria': {
+    en: 'Close location help',
+    ar: 'إغلاق مساعدة الموقع',
+  },
   'cart.needName': {
     en: 'Please enter your name before sending on WhatsApp.',
     ar: 'من فضلك اكتب اسمك قبل الإرسال على واتساب.',
