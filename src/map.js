@@ -336,7 +336,7 @@ function pharmacyPopup(branch) {
 
 function compoundPopup(compound) {
   const logo = compound.logo
-    ? `<img class="map-popup-logo" src="${compound.logo}" alt="" width="72" height="36" style="width:88px;height:28px;max-width:88px;max-height:28px;object-fit:contain;display:block;" />`
+    ? `<img class="map-popup-logo" src="${compound.logo}" alt="" width="72" height="36" />`
     : ''
   return `
     <div class="map-popup map-popup-compound">
@@ -562,14 +562,14 @@ export function initPharmacyMap(container) {
     marker.on('popupopen', () => {
       const el = marker.getElement()
       el?.classList.add('is-popup-open')
-      // Keep maxWidth in sync if the map was resized since bind.
       const popup = marker.getPopup()
-      if (popup) {
-        const next = mapPopupOptions(map, { offset: L.point(0, -4) })
-        popup.options.maxWidth = next.maxWidth
-        popup.options.autoPanPaddingTopLeft = next.autoPanPaddingTopLeft
-        popup.options.autoPanPaddingBottomRight = next.autoPanPaddingBottomRight
-      }
+      if (!popup) return
+      const next = mapPopupOptions(map, { offset: L.point(0, -4) })
+      if (popup.options.maxWidth === next.maxWidth) return
+      popup.options.maxWidth = next.maxWidth
+      popup.options.autoPanPaddingTopLeft = next.autoPanPaddingTopLeft
+      popup.options.autoPanPaddingBottomRight = next.autoPanPaddingBottomRight
+      popup.update()
     })
     marker.on('popupclose', () => {
       const el = marker.getElement()

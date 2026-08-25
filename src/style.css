@@ -1393,32 +1393,227 @@ html:not([data-theme]) .phone-btn-wa {
 
 .map-popup-phones {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.5rem;
-  margin-top: 0.45rem !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+  margin-top: 0.4rem !important;
+}
+
+.map-popup-phones .phone-row-sep {
+  display: none;
 }
 
 .map-popup-phone {
   color: var(--md-sys-color-on-surface) !important;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   text-underline-offset: 0.15em;
 }
 
 .map-popup-phone-sep {
   opacity: 0.45;
   color: var(--md-sys-color-on-surface-variant);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+}
+
+.map-popup-phones .phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
 .map-popup-phones .phone-row-num {
-  font-size: 0.78rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .map-popup-phones .phone-btn {
   width: 2rem;
   height: 2rem;
   border-radius: 10px;
+}
+
+.leaflet-popup {
+  /* Constrain to map viewport; Leaflet maxWidth still caps measurement. */
+  max-width: min(92vw, 18.25rem);
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--leaflet-popup-bg);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+  color: var(--md-sys-color-on-surface);
+  border-radius: 12px;
+  max-width: 100%;
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 0 0 1px var(--glass-edge);
+}
+
+.leaflet-popup-tip {
+  background: var(--leaflet-popup-bg);
+}
+
+.leaflet-popup-content {
+  margin: 0.6rem 0.7rem 0.65rem;
+  line-height: 1.35;
+  /* Leaflet sets an inline width from content measure — keep it from overflowing. */
+  width: auto !important;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 0.2rem;
+  inset-inline-end: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.4rem;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.75;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus-visible {
+  opacity: 1;
+  color: var(--md-sys-color-on-surface);
+}
+
+.map-popup {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.map-popup strong {
+  display: block;
+  padding-inline-end: 1.25rem;
+  font-size: 0.86rem;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.map-popup p {
+  margin: 0.28rem 0 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.map-popup-branch {
+  margin-top: 0.15rem !important;
+  color: var(--accent-soft) !important;
+  font-weight: 600;
+  font-size: 0.72rem !important;
+}
+
+.map-popup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.map-popup-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  box-shadow: inset 0 0 0 1px var(--glass-edge);
+}
+
+.map-popup-actions a.map-popup-navigate {
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  color: var(--md-sys-color-on-primary);
+  box-shadow: 0 3px 10px var(--accent-glow);
+}
+
+.map-popup-compound .map-popup-logo {
+  display: block;
+  width: 4.75rem;
+  height: 1.5rem;
+  max-width: 4.75rem;
+  max-height: 1.5rem;
+  object-fit: contain;
+  object-position: left center;
+  margin: 0 0 0.35rem;
+  filter: brightness(1.08) saturate(1.05);
+}
+
+html[dir='rtl'] .map-popup-compound .map-popup-logo {
+  object-position: right center;
+}
+
+@media (min-width: 720px) {
+  .leaflet-popup {
+    max-width: min(22rem, 90vw);
+  }
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 14px;
+  }
+
+  .leaflet-popup-content {
+    margin: 0.85rem 1rem;
+    line-height: 1.4;
+  }
+
+  .map-popup strong {
+    font-size: 0.95rem;
+  }
+
+  .map-popup p {
+    margin: 0.35rem 0 0;
+    font-size: 0.82rem;
+  }
+
+  .map-popup-branch {
+    font-size: 0.78rem !important;
+  }
+
+  .map-popup-phones {
+    gap: 0.35rem;
+    margin-top: 0.45rem !important;
+  }
+
+  .map-popup-phones .phone-row-num {
+    font-size: 0.78rem;
+  }
+
+  .map-popup-actions {
+    margin-top: 0.75rem;
+  }
+
+  .map-popup-actions a {
+    min-height: 2.5rem;
+    font-size: 0.8rem;
+    border-radius: 999px;
+  }
+
+  .map-popup-compound .map-popup-logo {
+    width: 5.5rem;
+    height: 1.75rem;
+    max-width: 5.5rem;
+    max-height: 1.75rem;
+    margin: 0 0 0.45rem;
+  }
 }
 
 .branch-contact-list {
@@ -1489,85 +1684,6 @@ html:not([data-theme]) .phone-btn-wa {
   height: 2.25rem !important;
   line-height: 2.25rem !important;
   box-shadow: var(--shadow-soft);
-}
-
-.leaflet-popup-content-wrapper {
-  background: var(--leaflet-popup-bg);
-  -webkit-backdrop-filter: var(--blur-glass);
-  backdrop-filter: var(--blur-glass);
-  color: var(--md-sys-color-on-surface);
-  border-radius: 14px;
-  box-shadow:
-    var(--shadow-soft),
-    inset 0 0 0 1px var(--glass-edge);
-}
-
-.leaflet-popup-tip {
-  background: var(--leaflet-popup-bg);
-}
-
-.leaflet-popup-content {
-  margin: 0.85rem 1rem;
-  line-height: 1.4;
-}
-
-.map-popup strong {
-  display: block;
-  font-size: 0.95rem;
-  letter-spacing: -0.015em;
-}
-
-.map-popup p {
-  margin: 0.35rem 0 0;
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 0.82rem;
-}
-
-.map-popup-branch {
-  margin-top: 0.2rem !important;
-  color: var(--accent-soft) !important;
-  font-weight: 600;
-  font-size: 0.78rem !important;
-}
-
-.map-popup-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.map-popup-actions a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.25rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 650;
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  box-shadow: inset 0 0 0 1px var(--glass-edge);
-}
-
-.map-popup-actions a.map-popup-navigate {
-  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
-  color: var(--md-sys-color-on-primary);
-  box-shadow: 0 4px 14px var(--accent-glow);
-}
-
-.map-popup-compound .map-popup-logo {
-  display: block;
-  width: 5.5rem;
-  height: 1.75rem;
-  max-width: 5.5rem;
-  max-height: 1.75rem;
-  object-fit: contain;
-  object-position: left center;
-  margin: 0 0 0.45rem;
-  filter: brightness(1.08) saturate(1.05);
 }
 
 .map-marker-pharmacy,
